@@ -3,15 +3,6 @@
 Fichier scraping Booking Disneyland
 """
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
-import time
-
-url = "https://www.booking.com/hotel/fr/disney-39-s-new-york-r.fr.html#tab-reviews"
-
-driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
-
 userNames = []
 notes = []
 country = []
