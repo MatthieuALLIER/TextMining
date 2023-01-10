@@ -17,9 +17,14 @@ for i in range(len(DFnames)):
 #Analyses
 from nettoyage import nettoyage_corpus
 
-#Filtre france en attendant
+#Filtre en attendant
 disney = disney[disney.Pays == "France"]
 disney = disney[disney.Positif != "Ce client n'a pas laissé de commentaire."]
 
+# Passage des commentaires en liste
+compos=disney.Positif.tolist()
 
+# Nettoyage 
+compos_clean = [str(i) for i in compos]
+compos_clean=nettoyage_corpus(compos_clean)
 

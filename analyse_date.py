@@ -6,19 +6,12 @@ Created on Mon Dec 26 13:42:01 2022
 """
 
 import os, pandas as pd
+import importTemp
 
-exec(open('importTemp.py').read())
-
-# Passage des commentaires en liste
-
-compos=disney.Positif.tolist()
-
-# Nettoyage 
-compos_clean = [str(i) for i in compos]
-compos_clean=nettoyage_corpus(compos_clean)
+disney = importTemp.disney
+compos_clean = importTemp.compos_clean
 
 #  Transformation en liste de texte
-
 compos_clean = [" ".join(w)for w in compos_clean]
 
 # Importer la classe CountVectorizer
@@ -45,4 +38,3 @@ mois=[date.month for date in date_sejour]
 
 mdtDF = pd.DataFrame(mdt, columns=parseur.get_feature_names())
 mdtSumYear = mdtDF.groupby(annee).sum().transpose()
-print()
