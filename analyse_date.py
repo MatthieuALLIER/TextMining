@@ -50,7 +50,7 @@ wc = WordCloud(background_color="black", max_words=2000, mask=castle_mask,
 wc.generate(" ".join(compos_clean))
 
 import matplotlib.pyplot as plt
-plt.figure(figsize=(20,30))
+plt.figure(figsize=(10,15))
 plt.imshow(wc)
 plt.axis("off")
 plt.savefig("out/CastleWC.png")
