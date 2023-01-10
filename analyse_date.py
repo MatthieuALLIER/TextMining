@@ -5,7 +5,8 @@ Created on Mon Dec 26 13:42:01 2022
 @author: rpons
 """
 
-import os, pandas as pd
+import os, pandas as pd, numpy as np
+import matplotlib.pyplot as plt
 import importTemp
 
 disney = importTemp.disney
@@ -38,3 +39,37 @@ mois=[date.month for date in date_sejour]
 
 mdtDF = pd.DataFrame(mdt, columns=parseur.get_feature_names())
 mdtSumYear = mdtDF.groupby(annee).sum().transpose()
+
+from PIL import Image
+castle_mask = np.array(Image.open("data/disneyCastle.png"))
+
+from wordcloud import WordCloud
+wc = WordCloud(background_color="black", max_words=2000, mask=castle_mask, 
+               contour_width=3, width=200, height=300, colormap="gist_rainbow")
+
+wc.generate(" ".join(compos_clean))
+
+import matplotlib.pyplot as plt
+plt.figure(figsize=(20,30))
+plt.imshow(wc)
+plt.axis("off")
+plt.savefig("out/CastleWC.png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
