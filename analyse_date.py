@@ -5,9 +5,12 @@ Created on Mon Dec 26 13:42:01 2022
 @author: rpons
 """
 
-import os, pandas as pd, numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd, numpy as np
 import importTemp
+
+from PIL import Image
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 disney = importTemp.disney
 compos_clean = importTemp.compos_clean
@@ -40,20 +43,21 @@ mois=[date.month for date in date_sejour]
 mdtDF = pd.DataFrame(mdt, columns=parseur.get_feature_names())
 mdtSumYear = mdtDF.groupby(annee).sum().transpose()
 
-from PIL import Image
 castle_mask = np.array(Image.open("data/disneyCastle.png"))
+compos_array = np.array(compos_clean)
 
-from wordcloud import WordCloud
-wc = WordCloud(background_color="black", max_words=2000, mask=castle_mask, 
-               contour_width=3, width=200, height=300, colormap="gist_rainbow")
-
-wc.generate(" ".join(compos_clean))
-
-import matplotlib.pyplot as plt
-plt.figure(figsize=(10,15))
-plt.imshow(wc)
-plt.axis("off")
-plt.savefig("out/CastleWC.png")
+for an in list(set(annee)):
+    wc = WordCloud(background_color="black", max_words=2000, mask=castle_mask, 
+                   contour_width=3, width=200, height=300, colormap="gist_rainbow")
+    
+    index = [i for i in range(len(annee)) if annee[i] == an]
+    
+    wc.generate(" ".join(compos_array[index]))
+    
+    plt.figure(figsize=(10,15))
+    plt.imshow(wc)
+    plt.axis("off")
+    plt.savefig("out/CastleWC_"+str(an)+".png")
 
 
 
