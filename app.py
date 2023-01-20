@@ -7,9 +7,9 @@ Created on Tue Jan 17 17:12:04 2023
 
 import pandas as pd
 
+import dash
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -24,9 +24,9 @@ TABPANEL = dbc.Container([
     html.Hr(),
     dbc.Tabs(
         [
-            dbc.Tab(label="Accueil", tab_id="index", value='tabAccueil'),
-            dbc.Tab(label="Données", tab_id="data", value='tabDonnees'),
-            dbc.Tab(label="Analyse", tab_id="analyse", value='tabAnalyse')           
+            dbc.Tab(label="Accueil", tab_id="index"),
+            dbc.Tab(label="Données", tab_id="data"),
+            dbc.Tab(label="Analyse", tab_id="analyse")           
         ],
         id="tabPanel",
         active_tab="index",
@@ -37,29 +37,17 @@ TABPANEL = dbc.Container([
 PageContent = dbc.Container([
     html.Div([
         
-    ], id="index-tab"),
+    ], id="index-tab", style= {'display': 'block'}),
     html.Div([
-    ], id="data-tab"),
-    html.Div([
-    ], id="analyse-tab")
-])
-
-#Apparence
-app.layout = html.Div([TABPANEL, PageContent])
-
-#Callback
-@app.callback(Output('tab1', 'children'),
-              [Input('tabs', 'value')])
-def update_tabs(value):
-    if value == 'tabDonnees':
-        return dbc.Tabs([
+        dbc.Tabs([
                     dbc.Tab(label="KPIs", tab_id="kpi"),
-                    dbc.Tab(label="Acquisition", tab_id="getData")       
+                    dbc.Tab(label="Acquisition", tab_id="getData")     
                 ],
                 id="tabPanelData",
-                active_tab="kpi")
-    if value == 'tabAnalyse':
-        return dbc.Tabs([
+                active_tab="kpi",)
+    ], id="data-tab", style= {'display': 'none'}),
+    html.Div([
+        dbc.Tabs([
                     dbc.Tab(label="Date", tab_id="date"),
                     dbc.Tab(label="Pays", tab_id="pays"),
                     dbc.Tab(label="Hôtel", tab_id="hotel"),
@@ -67,8 +55,25 @@ def update_tabs(value):
                 ],
                 id="tabPanelAnalyse",
                 active_tab="date")
-    
-    
+    ], id="analyse-tab", style= {'display': 'none'})
+])
+
+#Apparence
+app.layout = html.Div([TABPANEL, PageContent])
+
+#Callback
+@app.callback([Output('index-tab', 'style'),
+               Output('data-tab', 'style'), 
+               Output('analyse-tab', 'style')],
+               [Input('tabPanel', 'active_tab')])
+def tabChange(value):
+    if value == "index":
+        return [{'display': 'block'},{'display': 'none'},{'display': 'none'}]
+    if value == "data":
+        return [{'display': 'none'},{'display': 'block'},{'display': 'none'}]
+    if value == "analyse":
+        return [{'display': 'none'},{'display': 'none'},{'display': 'block'}]
+
 #Lauch
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True, use_reloader=False)
