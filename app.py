@@ -36,15 +36,23 @@ TABPANEL = dbc.Container([
 #Content
 PageContent = dbc.Container([
     html.Div([
-        
+        #Accueil
+        html.P("Accueil")
     ], id="index-tab", style= {'display': 'block'}),
     html.Div([
         dbc.Tabs([
                     dbc.Tab(label="KPIs", tab_id="kpi"),
                     dbc.Tab(label="Acquisition", tab_id="getData")     
-                ],
-                id="tabPanelData",
-                active_tab="kpi",)
+                ], id="tabPanelData", active_tab="kpi"),
+        html.Div([
+            #KPIs
+            html.P("KPIs")
+        ], id="kpi-tab", style= {'display': 'none'}),
+        html.Div([
+            #Acquisition
+            html.P("Acquisition")
+        ], id="getData-tab", style= {'display': 'none'})
+        
     ], id="data-tab", style= {'display': 'none'}),
     html.Div([
         dbc.Tabs([
@@ -52,9 +60,23 @@ PageContent = dbc.Container([
                     dbc.Tab(label="Pays", tab_id="pays"),
                     dbc.Tab(label="Hôtel", tab_id="hotel"),
                     dbc.Tab(label="Mots liés", tab_id="lies")    
-                ],
-                id="tabPanelAnalyse",
-                active_tab="date")
+                ], id="tabPanelAnalyse", active_tab="date"),
+        html.Div([
+            #Date
+            html.P("Date")
+        ], id="date-tab", style= {'display': 'none'}),
+        html.Div([
+            #Pays
+            html.P("Pays")
+        ], id="pays-tab", style= {'display': 'none'}),
+        html.Div([
+            #Hôtel
+            html.P("Hôtel")
+        ], id="hotel-tab", style= {'display': 'none'}),
+        html.Div([
+            #Mots liés
+            html.P("Mots liés")
+        ], id="lies-tab", style= {'display': 'none'})
     ], id="analyse-tab", style= {'display': 'none'})
 ])
 
@@ -68,11 +90,55 @@ app.layout = html.Div([TABPANEL, PageContent])
                [Input('tabPanel', 'active_tab')])
 def tabChange(value):
     if value == "index":
-        return [{'display': 'block'},{'display': 'none'},{'display': 'none'}]
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
     if value == "data":
-        return [{'display': 'none'},{'display': 'block'},{'display': 'none'}]
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
     if value == "analyse":
-        return [{'display': 'none'},{'display': 'none'},{'display': 'block'}]
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+    
+@app.callback([Output('kpi-tab', 'style'),
+               Output('getData-tab', 'style')],
+               [Input('tabPanelData', 'active_tab')])
+def tabChangeData(value):
+    if value == "kpi":
+        return [{'display': 'block'},
+                {'display': 'none'}]
+    if value == "getData":
+        return [{'display': 'none'},
+                {'display': 'block'}]
+    
+@app.callback([Output('date-tab', 'style'),
+               Output('pays-tab', 'style'), 
+               Output('hotel-tab', 'style'),
+               Output('lies-tab', 'style')],
+               [Input('tabPanelAnalyse', 'active_tab')])
+def tabChangeAnalyse(value):
+    if value == "date":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "pays":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "hotel":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "lies":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
 
 #Lauch
 if __name__ == '__main__':
