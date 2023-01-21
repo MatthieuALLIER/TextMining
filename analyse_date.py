@@ -10,10 +10,11 @@ import pandas as pd, numpy as np
 from PIL import Image
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from Lib import nettoyage
 from sklearn.feature_extraction.text import CountVectorizer
 
-def analyseDate(compos_clean, annee):
+def analyseDate(compos_clean, annee, index, type_analyse):
+    
+    annee= [annee[i] for i in index]
     
     parseur = CountVectorizer()
     
@@ -42,6 +43,6 @@ def analyseDate(compos_clean, annee):
         plt.figure(figsize=(10,15))
         plt.imshow(wc)
         plt.axis("off")
-        plt.savefig("out/CastleWC_"+str(an)+".png")
+        plt.savefig("assets/" + str(type_analyse)+ "/CastleWC_"+str(an)+".png")
         
     return mdtSumYear
