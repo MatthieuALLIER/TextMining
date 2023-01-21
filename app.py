@@ -9,13 +9,22 @@ import pandas as pd
 
 import dash
 from dash import Dash, html, dcc, Input, Output, State
+from wordcloud import WordCloud
 import dash_bootstrap_components as dbc
 
 import plotly.express as px
 import plotly.graph_objects as go
+from datetime import date
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='Disney textmining')
 server = app.server
+
+disney=pd.read_csv("data/disney.csv")
+
+# Passage de la colonne date_sejour en format date
+import dateparser 
+date_sejour = disney["Date séjour"].tolist()
+date_sejour=[dateparser.parse(date) for date in date_sejour]
 
 #Menu
 TABPANEL = dbc.Container([
@@ -63,7 +72,12 @@ PageContent = dbc.Container([
                 ], id="tabPanelAnalyse", active_tab="date"),
         html.Div([
             #Date
-            html.P("Date")
+            dcc.DatePickerRange(
+                display_format='M/Y',
+                start_date=min(date_sejour),
+                end_date=max(date_sejour)
+             )
+            
         ], id="date-tab", style= {'display': 'none'}),
         html.Div([
             #Pays
