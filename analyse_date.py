@@ -6,14 +6,19 @@ Created on Mon Dec 26 13:42:01 2022
 """
 
 import pandas as pd, numpy as np
-import importTemp
 
 from PIL import Image
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from Lib import nettoyage
+disney=pd.read_csv("data/disney.csv")
 
-disney = importTemp.disney
-compos_clean = importTemp.compos_clean
+# Passage des commentaires en liste
+compos=disney.Positif.tolist()
+
+# Nettoyage 
+compos_clean = [str(i) for i in compos]
+compos_clean=nettoyage.nettoyage_corpus(compos_clean)
 
 #  Transformation en liste de texte
 compos_clean = [" ".join(w)for w in compos_clean]
