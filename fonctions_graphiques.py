@@ -11,9 +11,36 @@ from wordcloud import WordCloud
 
 #disney = df de base
 
+###########---------------------  DF pour le sunburst   ------------------####################
+
 #ajoute une colonne nbc avec des 1 et supprime 8 lignes sans le pays
 df_sunb = disney.drop(disney.index[disney.iloc[:,2].isnull()],0).assign(nbc = 1)
 
+###########--------------------- DF pour plot comm/mois  ------------------####################
+
+df_commdate = disney
+
+#Séparation mois/annee
+df_commdate["Date séjour"] = df_commdate["Date séjour"].apply(lambda x: x.split(" "))
+df_commdate["mois"] = [i[0] for i in df_commdate["Date séjour"]]
+df_commdate["annee"] = [i[1] for i in df_commdate["Date séjour"]]
+
+# Changement mois en numérique pour traquer l'ordre
+old = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
+new = ['01','02','03','04','05','06','07','08','09','10','11','12']
+dictio = dict(zip(old, new))
+df_commdate['mois'].replace(dictio, inplace=True)
+
+#Moyenne de note par mois
+agg_df = df-commdate.groupby(["annee","mois"])["Note"].mean().to_frame().reset_index()
+
+#Nouveau index date
+agg_df['date'] = agg_df['annee'].str.cat(agg_df['mois'], sep=' ')
+agg_df = agg_df.set_index('date').drop(columns=["annee", "mois"])
+
+
+
+###########--------------------- DF pour la world map  ------------------####################
 
 #Création df avec Pays et nb commentaires par Pays puis traduction en anglais pour faire fonctionner le graph
 # Pour le df de la carte du monde, déso j'ai pas trouvé plus court, les packages de traductions fonctionnaient pas très bien 
@@ -79,10 +106,11 @@ df_pays_nb['Pays'].replace(translation_dict, inplace=True)
 
 class Fig :
 
-    def __init__(self, df,df_sunb, df_pays_nb):
+    def __init__(self, df,df_sunb, df_pays_nb, agg_df):
         self.__df = df
         self.__df_sunb = df_sunb
         self.__df_pays_nb = df_pays_nb
+        self.__agg_df = agg_df
         
 #Sunburst Hotel > Pays > Note
     def get_fig_sunburst(self):
@@ -90,11 +118,15 @@ class Fig :
 
 #Un graphique à courbes pour montrer l'évolution des notes au fil des mois.
     
-#en cours    
+    def get_fig_plot_comm(self):
+       data = [go.Scatter(x=self.__agg_df.index, y=self.__agg_df['Note'])]
+       layout = go.Layout(title='Evolution des notes au fil des mois', xaxis=dict(title='Month'), yaxis=dict(title='Note'))
+       return go.Figure(data=data, layout=layout)
+ 
 
 #Carte du monde avec nb de commentaire par pays
 
-    def get_fig_map(self)
+    def get_fig_map(self):
         return fig = px.choropleth(data_frame=sel.__df_pays_nb,
                     locations='Pays',  # colonne contenant les noms des pays
                     locationmode='country names',
