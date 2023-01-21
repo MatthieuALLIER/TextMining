@@ -23,43 +23,48 @@ server = app.server
 print("Importation des données")
 disney=pd.read_csv("data/disney.csv")
 
-#### Nettoyage
-# Titre
-print("Nettoyage des titres")
- # On enlève les inconnus dans les avis
-titre=nettoyage.nettoyage_corpus(disney.Titre)
-titre_join = [" ".join(w)for w in titre]
-# On enlève les inconnus dans les avis
-#titre_join = [w for w in titre_join if not w == "inconnu"]
+# # Passage de la colonne date_sejour en format date
+# print("Formatage des dates")
+# import dateparser 
+# date_sejour = disney["Date séjour"].tolist()
+# date_sejour=[dateparser.parse(date) for date in date_sejour]
+# annee=[date.year for date in date_sejour]
 
+# #### Nettoyage
+# # Titre
+# print("Nettoyage des titres")
+#  # On enlève les inconnus dans les avis
+# titre=nettoyage.nettoyage_corpus(disney.Titre)
+# titre_join = [" ".join(w)for w in titre]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(titre_join)) if titre_join[i] != "inconnu"]
+# titre_join = [titre_join[i] for i in index]
 
-# Commentairs positifs
-print("Nettoyage des commentaires positifs")
-positif=nettoyage.nettoyage_corpus(disney.Positif)
-positif_join = [" ".join(w)for w in positif]
-# On enlève les inconnus dans les avis
-#positif_join = [w for w in positif_join if not w == "inconnu"]
+# # Fonction d'analyse par année pour les titres
+# titredate=analyseDate(titre_join,annee,index,"titre")
 
+# # Commentairs positifs
+# print("Nettoyage des commentaires positifs")
+# positif=nettoyage.nettoyage_corpus(disney.Positif)
+# positif_join = [" ".join(w)for w in positif]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(positif_join)) if positif_join[i] != "inconnu"]
+# positif_join = [positif_join[i] for i in index]
 
-# Commentaires négatifs
-print("Nettoyage des commentaires négatifs")
-negatif=nettoyage.nettoyage_corpus(disney.Négatif)
-negatif_join = [" ".join(w)for w in negatif]
-# On enlève les inconnus dans les avis
-#negatif_join = [w for w in negatif_join if not w == "inconnu"]
+# # Fonction d'analyse par année pour les commentaires positifs
+# posdate=analyseDate(positif_join,annee,index,"positif")
 
+# # Commentaires négatifs
+# print("Nettoyage des commentaires négatifs")
+# negatif=nettoyage.nettoyage_corpus(disney.Négatif)
+# negatif_join = [" ".join(w)for w in negatif]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(negatif_join)) if negatif_join[i] != "inconnu"]
+# negatif_join = [negatif_join[i] for i in index]
 
-# Passage de la colonne date_sejour en format date
-print("Formatage des dates")
-import dateparser 
-date_sejour = disney["Date séjour"].tolist()
-date_sejour=[dateparser.parse(date) for date in date_sejour]
-annee=[date.year for date in date_sejour]
+# # Fonction d'analyse par année pour les commentaires négatifs
+# negdate=analyseDate(negatif_join,annee,index,"négatif")
 
-# Fonction d'analyse par année
-titredate=analyseDate(titre_join,annee,"titre")
-posdate=analyseDate(positif_join,annee,"positif")
-negdate=analyseDate(negatif_join,annee,"négatif")
 #Menu
 TABPANEL = dbc.Container([
     html.H2("Analyse des commentaires Disney"),
@@ -114,30 +119,32 @@ PageContent = dbc.Container([
             dcc.Dropdown(
                    options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
                    value="1",
+                   style={'color': 'Pink', 'font-size': 20},
+                   clearable = False,
                    id="liste_choix_corpus_date"
              ),
             html.Div([
-               html.Img(id='image_titre_date_2019'),
-               html.Img(id='image_titre_date_2020'),
-               html.Img(id='image_titre_date_2021'),
-               html.Img(id='image_titre_date_2022'),
-               html.Img(id='image_titre_date_2023')
+               html.Img(src=r"assets/titre/CastleWC_2019.png",width='20%'),
+               html.Img(src=r"assets/titre/CastleWC_2020.png",width='20%'),
+               html.Img(src=r"assets/titre/CastleWC_2021.png",width='20%'),
+               html.Img(src=r"assets/titre/CastleWC_2022.png",width='20%'),
+               html.Img(src=r"assets/titre/CastleWC_2023.png",width='20%')
             ], id="date-titre", style= {'display': 'none'}),
             
             html.Div([
-               html.Img(id='image_positifs_date_2019'),
-               html.Img(id='image_positifs_date_2020'),
-               html.Img(id='image_positifs_date_2021'),
-               html.Img(id='image_positifs_date_2022'),
-               html.Img(id='image_positifs_date_2023')
+               html.Img(src=r"assets/positif/CastleWC_2019.png",width='20%'),
+               html.Img(src=r"assets/positif/CastleWC_2020.png",width='20%'),
+               html.Img(src=r"assets/positif/CastleWC_2021.png",width='20%'),
+               html.Img(src=r"assets/positif/CastleWC_2022.png",width='20%'),
+               html.Img(src=r"assets/positif/CastleWC_2023.png",width='20%')
             ], id="date-positif", style= {'display': 'none'}),
             
             html.Div([
-               html.Img(id='image_negatifs_date_2019'),
-               html.Img(id='image_negatifs_date_2020'),
-               html.Img(id='image_negatifs_date_2021'),
-               html.Img(id='image_negatifs_date_2022'),
-               html.Img(id='image_negatifs_date_2023')
+               html.Img(src=r"assets/négatif/CastleWC_2019.png",width='20%'),
+               html.Img(src=r"assets/négatif/CastleWC_2020.png",width='20%'),
+               html.Img(src=r"assets/négatif/CastleWC_2021.png",width='20%'),
+               html.Img(src=r"assets/négatif/CastleWC_2022.png",width='20%'),
+               html.Img(src=r"assets/négatif/CastleWC_2023.png",width='20%')
             ], id="date-negatif", style= {'display': 'none'})
             
         ], id="date-tab", style= {'display': 'none'}),
@@ -222,7 +229,6 @@ def tabChangeAnalyse(value):
                ],
                [Input('liste_choix_corpus_date', 'value')])
 def DateChangeCorpus(value):
-    print(value)
     if value == "1":
         return [{'display': 'block'},
                 {'display': 'none'},
