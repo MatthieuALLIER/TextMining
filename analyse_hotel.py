@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan 21 17:29:28 2023
+Created on Sat Jan 21 19:09:01 2023
 
 @author: spica
 """
@@ -12,9 +12,9 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
 
-def analysePays(compos_clean, pays, index, type_analyse):
+def analyseHotel(compos_clean, hotel, index, type_analyse):
     
-    pays= [pays[i] for i in index]
+    hotel= [hotel[i] for i in index]
     parseur = CountVectorizer()
     
     #pour la colonne "pourquoi"
@@ -26,16 +26,16 @@ def analysePays(compos_clean, pays, index, type_analyse):
     print(mdt.shape)
     
     mdtDF = pd.DataFrame(mdt, columns=parseur.get_feature_names())
-    mdtSumCountry = mdtDF.groupby(pays).sum().transpose()
+    mdtSumhotel = mdtDF.groupby(hotel).sum().transpose()
     
     castle_mask = np.array(Image.open("data/disneyCastle.png"))
     compos_array = np.array(compos_clean)
     
-    for an in list(set(pays)):
+    for an in list(set(hotel)):
         wc = WordCloud(background_color="black", max_words=2000, mask=castle_mask, 
                        contour_width=3, width=200, height=300, colormap="gist_rainbow")
         
-        index = [i for i in range(len(pays)) if pays[i] == an]
+        index = [i for i in range(len(hotel)) if hotel[i] == an]
         
         wc.generate(" ".join(compos_array[index]))
         
@@ -44,5 +44,4 @@ def analysePays(compos_clean, pays, index, type_analyse):
         plt.axis("off")
         plt.savefig("assets/" + str(type_analyse)+ "/CastleWC_"+str(an)+".png")
         
-    return mdtSumCountry
-    
+    return mdtSumhotel
