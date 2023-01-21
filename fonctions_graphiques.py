@@ -14,11 +14,12 @@ from wordcloud import WordCloud
 #ajoute une colonne nbc avec des 1 et supprime 8 lignes sans le pays
 df_sunb = disney.drop(disney.index[disney.iloc[:,2].isnull()],0).assign(nbc = 1)
 
+
+#Création df avec Pays et nb commentaires par Pays puis traduction en anglais pour faire fonctionner le graph
+# Pour le df de la carte du monde, déso j'ai pas trouvé plus court, les packages de traductions fonctionnaient pas très bien 
+
 df_pays_nb = disney['Pays'].value_counts().to_frame().reset_index().rename(columns={'index': 'Pays', 'Pays': 'occ'})
 print(df_pays_nb)
-
-
-# Pour le df de la carte du monde, déso j'ai pas trouvé plus court, les packages de traductions fonctionnaient pas très bien 
 
 old_values = ['Finlande', 'La Réunion', 'France', 'Espagne', 'Belgique',
        'Suisse', 'Maroc', 'Guadeloupe', 'États-Unis', 'Allemagne',
