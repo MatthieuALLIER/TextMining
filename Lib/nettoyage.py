@@ -12,6 +12,7 @@ lem = WordNetLemmatizer()
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 mots_vides = stopwords.words("french")
+import emoji
 
 #********************************
 #fonction pour nettoyage document (chaîne de caractères)
