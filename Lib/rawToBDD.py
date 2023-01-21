@@ -2,8 +2,7 @@
 """
 Transforme les données brutes en données à intégrer dans le modèle en étoile
 """
-import pandas as pd
-
+import emoji
 
 def StarToSQLInsert(disney, date, hotel, pays):
     """
@@ -19,11 +18,9 @@ def StarToSQLInsert(disney, date, hotel, pays):
         
         #Add modality if not exist
         if row["Date séjour"] not in date.date.tolist():
-            date, queryDate = AddModaliteDimension(row["Date séjour"], date, "date")
-            pushToBDD(queryDate)
+            date = AddModaliteDimension(row["Date séjour"], date, "date")
         if row["Pays"] not in pays.pays.tolist():
-            pays, queryPays = AddModaliteDimension(row["Pays"], pays, "pays")
-            pushToBDD(queryPays)
+            pays = AddModaliteDimension(row["Pays"], pays, "pays")
         
         #Insert row
         query += "('"+row["Prenom"]+"',"+str(row["Note"])+","
@@ -35,7 +32,7 @@ def StarToSQLInsert(disney, date, hotel, pays):
     
     query = query[:-1]
         
-    return query
+    reqToBDD(query)
         
     
 def AddModaliteDimension(modalite, table, dimension):
@@ -46,10 +43,16 @@ def AddModaliteDimension(modalite, table, dimension):
     id_modalite = max(table.iloc[:,1]) + 1
     table = table.append({dimension:modalite, col_id:id_modalite}, ignore_index=True)
     query = "INSERT INTO "+dimension+" VALUES ('"+modalite+"',"+str(id_modalite)+")"
-    
-    return table, query
+    reqToBDD(query)
+    return table
 
 
-def pushToBDD(query):
-    
+def reqToBDD(connection, query, type):
+    cursor = connection.cursor()
+    cursor.execute(query)
+    print("Requete de type : "+type+" éxécutée")
+    if type == "select":
+        record = cursor.fetchall()
+        return record
+        
     
