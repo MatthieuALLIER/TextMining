@@ -23,19 +23,32 @@ server = app.server
 print("Importation des données")
 disney=pd.read_csv("data/disney.csv")
 
-## Nettoyage
+#### Nettoyage
 # Titre
 print("Nettoyage des titres")
+ # On enlève les inconnus dans les avis
 titre=nettoyage.nettoyage_corpus(disney.Titre)
 titre_join = [" ".join(w)for w in titre]
+# On enlève les inconnus dans les avis
+#titre_join = [w for w in titre_join if not w == "inconnu"]
+
+
 # Commentairs positifs
 print("Nettoyage des commentaires positifs")
 positif=nettoyage.nettoyage_corpus(disney.Positif)
 positif_join = [" ".join(w)for w in positif]
+# On enlève les inconnus dans les avis
+#positif_join = [w for w in positif_join if not w == "inconnu"]
+
+
 # Commentaires négatifs
-print("Nettoyage des commentaires négqtifs")
+print("Nettoyage des commentaires négatifs")
 negatif=nettoyage.nettoyage_corpus(disney.Négatif)
 negatif_join = [" ".join(w)for w in negatif]
+# On enlève les inconnus dans les avis
+#negatif_join = [w for w in negatif_join if not w == "inconnu"]
+
+
 # Passage de la colonne date_sejour en format date
 print("Formatage des dates")
 import dateparser 
@@ -44,9 +57,9 @@ date_sejour=[dateparser.parse(date) for date in date_sejour]
 annee=[date.year for date in date_sejour]
 
 # Fonction d'analyse par année
-posdate=analyseDate(positif_join,annee)
-negdate=analyseDate(positif_join,annee)
-titredate=analyseDate(positif_join,annee)
+titredate=analyseDate(titre_join,annee,"titre")
+posdate=analyseDate(positif_join,annee,"positif")
+negdate=analyseDate(negatif_join,annee,"négatif")
 #Menu
 TABPANEL = dbc.Container([
     html.H2("Analyse des commentaires Disney"),
