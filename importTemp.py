@@ -21,10 +21,4 @@ from nettoyage import nettoyage_corpus
 disney = disney[disney.Pays == "France"]
 disney = disney[disney.Positif != "Ce client n'a pas laissé de commentaire."]
 
-# Passage des commentaires en liste
-compos=disney.Positif.tolist()
-
-# Nettoyage 
-compos_clean = [str(i) for i in compos]
-compos_clean=nettoyage_corpus(compos_clean)
 
