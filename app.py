@@ -32,8 +32,9 @@ from Lib import nettoyage, loopScraping, rawToBDD
 from analyse_date import analyseDate
 from Analyse_pays import analysePays
 from analyse_hotel import analyseHotel
-
 #Connection à la Base de donnée
+
+
 try:
     connection = mysql.connector.connect(host='localhost',
                                          database='disney_avis_booking',
@@ -176,32 +177,55 @@ PageContent = dbc.Container([
             dcc.Dropdown(
                    options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
                    value="1",
-                   style={'color': 'Pink', 'font-size': 20},
+                   style={'font-size': 20},
                    clearable = False,
                    id="liste_choix_corpus_date"
              ),
             html.Div([
-               html.Img(src=r"assets/titre/CastleWC_2019.png",width='20%'),
-               html.Img(src=r"assets/titre/CastleWC_2020.png",width='20%'),
-               html.Img(src=r"assets/titre/CastleWC_2021.png",width='20%'),
-               html.Img(src=r"assets/titre/CastleWC_2022.png",width='20%'),
-               html.Img(src=r"assets/titre/CastleWC_2023.png",width='20%')
+                dcc.Dropdown(
+                       options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
+                       value="1",
+                       style={'font-size': 20},
+                       clearable = False,
+                       id="liste_choix_date_titre"
+                 ),
+                
+                
+               html.Img(src=r"assets/titre/CastleWC_2019.png",width='50%', id="titre-2019", style= {'display': 'none'}),
+               html.Img(src=r"assets/titre/CastleWC_2020.png",width='50%', id="titre-2020", style= {'display': 'none'}),
+               html.Img(src=r"assets/titre/CastleWC_2021.png",width='50%', id="titre-2021", style= {'display': 'none'}),
+               html.Img(src=r"assets/titre/CastleWC_2022.png",width='50%', id="titre-2022", style= {'display': 'none'}),
+               html.Img(src=r"assets/titre/CastleWC_2023.png",width='50%', id="titre-2023", style= {'display': 'none'})
             ], id="date-titre", style= {'display': 'none'}),
             
             html.Div([
-               html.Img(src=r"assets/positif/CastleWC_2019.png",width='20%'),
-               html.Img(src=r"assets/positif/CastleWC_2020.png",width='20%'),
-               html.Img(src=r"assets/positif/CastleWC_2021.png",width='20%'),
-               html.Img(src=r"assets/positif/CastleWC_2022.png",width='20%'),
-               html.Img(src=r"assets/positif/CastleWC_2023.png",width='20%')
+                    dcc.Dropdown(
+                           options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
+                           value="1",
+                           style={'font-size': 20},
+                           clearable = False,
+                           id="liste_choix_date_positif"
+                     ),
+               html.Img(src=r"assets/positif/CastleWC_2019.png",width='50%',id="positif-2019", style= {'display': 'none'}),
+               html.Img(src=r"assets/positif/CastleWC_2020.png",width='50%',id="positif-2020", style= {'display': 'none'}),
+               html.Img(src=r"assets/positif/CastleWC_2021.png",width='50%',id="positif-2021", style= {'display': 'none'}),
+               html.Img(src=r"assets/positif/CastleWC_2022.png",width='50%',id="positif-2022", style= {'display': 'none'}),
+               html.Img(src=r"assets/positif/CastleWC_2023.png",width='50%',id="positif-2023", style= {'display': 'none'})
             ], id="date-positif", style= {'display': 'none'}),
             
             html.Div([
-               html.Img(src=r"assets/négatif/CastleWC_2019.png",width='20%'),
-               html.Img(src=r"assets/négatif/CastleWC_2020.png",width='20%'),
-               html.Img(src=r"assets/négatif/CastleWC_2021.png",width='20%'),
-               html.Img(src=r"assets/négatif/CastleWC_2022.png",width='20%'),
-               html.Img(src=r"assets/négatif/CastleWC_2023.png",width='20%')
+                    dcc.Dropdown(
+                           options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
+                           value="1",
+                           style={'font-size': 20},
+                           clearable = False,
+                           id="liste_choix_date_negatif"
+                     ),
+               html.Img(src=r"assets/négatif/CastleWC_2019.png",width='50%',id="négatif-2019", style= {'display': 'none'}),
+               html.Img(src=r"assets/négatif/CastleWC_2020.png",width='50%',id="négatif-2020", style= {'display': 'none'}),
+               html.Img(src=r"assets/négatif/CastleWC_2021.png",width='50%',id="négatif-2021", style= {'display': 'none'}),
+               html.Img(src=r"assets/négatif/CastleWC_2022.png",width='50%',id="négatif-2022", style= {'display': 'none'}),
+               html.Img(src=r"assets/négatif/CastleWC_2023.png",width='50%',id="négatif-2023", style= {'display': 'none'})
             ], id="date-negatif", style= {'display': 'none'})
             
         ], id="date-tab", style= {'display': 'none'}),
@@ -210,7 +234,7 @@ PageContent = dbc.Container([
             dcc.Dropdown(
                        options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
                        value="1",
-                       style={'color': 'Pink', 'font-size': 20},
+                       style={'font-size': 20},
                        clearable = False,
                        id="liste_choix_corpus_pays"
                  ),
@@ -221,56 +245,56 @@ PageContent = dbc.Container([
                     dcc.Dropdown(
                            options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
                            value="1",
-                           style={'color': 'Pink', 'font-size': 20},
+                           style={'font-size': 20},
                            clearable = False,
                            id="liste_choix_pays_titre"
                      ),
                     
-                   html.Img(src=r"assets/titre/CastleWC_Allemagne.png", width='20%', id="titre-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Belgique.png",width='20%', id="titre-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Espagne.png",width='20%', id="titre-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_France.png",width='20%', id="titre-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Italie.png",width='20%', id="titre-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Pays-Bas.png",width='20%', id="titre-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Royaume-Uni.png",width='20%', id="titre-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Suisse.png",width='20%', id="titre-Suisse", style= {'display': 'none'})
+                   html.Img(src=r"assets/titre/CastleWC_Allemagne.png", width='50%', id="titre-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Belgique.png",width='50%', id="titre-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Espagne.png",width='50%', id="titre-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_France.png",width='50%', id="titre-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Italie.png",width='50%', id="titre-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Pays-Bas.png",width='50%', id="titre-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Royaume-Uni.png",width='50%', id="titre-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Suisse.png",width='50%', id="titre-Suisse", style= {'display': 'none'})
                 ], id="pays-titre", style= {'display': 'none'}),
                 
                 html.Div([
                     dcc.Dropdown(
                            options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
                            value="1",
-                           style={'color': 'Pink', 'font-size': 20},
+                           style={'font-size': 20},
                            clearable = False,
                            id="liste_choix_pays_positif"
                      ),
-                   html.Img(src=r"assets/positif/CastleWC_Allemagne.png", width='20%', id="positif-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Belgique.png",width='20%', id="positif-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Espagne.png",width='20%', id="positif-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_France.png",width='20%', id="positif-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Italie.png",width='20%', id="positif-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Pays-Bas.png",width='20%', id="positif-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Royaume-Uni.png",width='20%', id="positif-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Suisse.png",width='20%', id="positif-Suisse", style= {'display': 'none'})
+                   html.Img(src=r"assets/positif/CastleWC_Allemagne.png", width='50%', id="positif-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Belgique.png",width='50%', id="positif-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Espagne.png",width='50%', id="positif-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_France.png",width='50%', id="positif-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Italie.png",width='50%', id="positif-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Pays-Bas.png",width='50%', id="positif-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Royaume-Uni.png",width='50%', id="positif-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Suisse.png",width='50%', id="positif-Suisse", style= {'display': 'none'})
                 ], id="pays-positif", style= {'display': 'none'}),
                 
                 html.Div([
                     dcc.Dropdown(
                            options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
                            value="1",
-                           style={'color': 'Pink', 'font-size': 20},
+                           style={'font-size': 20},
                            clearable = False,
                            id="liste_choix_pays_negatif"
                      ),
                      
-                   html.Img(src=r"assets/négatif/CastleWC_Allemagne.png", width='20%', id="négatif-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Belgique.png",width='20%', id="négatif-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Espagne.png",width='20%', id="négatif-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_France.png",width='20%', id="négatif-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Italie.png",width='20%', id="négatif-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Pays-Bas.png",width='20%', id="négatif-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Royaume-Uni.png",width='20%', id="négatif-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Suisse.png",width='20%', id="négatif-Suisse", style= {'display': 'none'})
+                   html.Img(src=r"assets/négatif/CastleWC_Allemagne.png", width='50%', id="négatif-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Belgique.png",width='50%', id="négatif-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Espagne.png",width='50%', id="négatif-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_France.png",width='50%', id="négatif-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Italie.png",width='50%', id="négatif-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Pays-Bas.png",width='50%', id="négatif-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Royaume-Uni.png",width='50%', id="négatif-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Suisse.png",width='50%', id="négatif-Suisse", style= {'display': 'none'})
                 ], id="pays-negatif", style= {'display': 'none'})
         ], id="pays-tab", style= {'display': 'none'}),
         html.Div([
@@ -278,35 +302,56 @@ PageContent = dbc.Container([
             dcc.Dropdown(
                     options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
                     value="1",
-                    style={'color': 'Pink', 'font-size': 20},
+                    style={'font-size': 20},
                     clearable = False,
                     id="liste_choix_corpus_hotel"
               ),
              html.Div([
-                html.Img(src=r"assets/titre/CastleWC_cheyenne.png",width='20%'),
-                html.Img(src=r"assets/titre/CastleWC_davyCrockettRanch.png",width='20%'),
-                html.Img(src=r"assets/titre/CastleWC_newportBay.png",width='20%'),
-                html.Img(src=r"assets/titre/CastleWC_newYork.png",width='20%'),
-                html.Img(src=r"assets/titre/CastleWC_santaFe.png",width='20%'),
-                html.Img(src=r"assets/titre/CastleWC_sequoiaLodge.png",width='20%')
+                  dcc.Dropdown(
+                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
+                         value="1",
+                         style={'font-size': 20},
+                         clearable = False,
+                         id="liste_choix_hotel_titre"
+                   ),
+                html.Img(src=r"assets/titre/CastleWC_cheyenne.png",width='50%',id="titre-cheyenne", style= {'display': 'none'}),
+                html.Img(src=r"assets/titre/CastleWC_davyCrockettRanch.png",width='50%',id="titre-davyCrockettRanch", style= {'display': 'none'}),
+                html.Img(src=r"assets/titre/CastleWC_newportBay.png",width='50%',id="titre-newportBay", style= {'display': 'none'}),
+                html.Img(src=r"assets/titre/CastleWC_newYork.png",width='50%',id="titre-newYork", style= {'display': 'none'}),
+                html.Img(src=r"assets/titre/CastleWC_santaFe.png",width='50%',id="titre-santaFe", style= {'display': 'none'}),
+                html.Img(src=r"assets/titre/CastleWC_sequoiaLodge.png",width='50%',id="titre-sequoiLodge", style= {'display': 'none'})
              ], id="hotel-titre", style= {'display': 'none'}),
              
              html.Div([
-                html.Img(src=r"assets/positif/CastleWC_cheyenne.png",width='20%'),
-                html.Img(src=r"assets/positif/CastleWC_davyCrockettRanch.png",width='20%'),
-                html.Img(src=r"assets/positif/CastleWC_newportBay.png",width='20%'),
-                html.Img(src=r"assets/positif/CastleWC_newYork.png",width='20%'),
-                html.Img(src=r"assets/positif/CastleWC_santaFe.png",width='20%'),
-                html.Img(src=r"assets/positif/CastleWC_sequoiaLodge.png",width='20%')
+                  dcc.Dropdown(
+                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
+                         value="1",
+                         style={'font-size': 20},
+                         clearable = False,
+                         id="liste_choix_hotel_positif"
+                   ),
+                html.Img(src=r"assets/positif/CastleWC_cheyenne.png",width='50%',id="positif-cheyenne", style= {'display': 'none'}),
+                html.Img(src=r"assets/positif/CastleWC_davyCrockettRanch.png",width='50%',id="positif-davyCrockettRanch", style= {'display': 'none'}),
+                html.Img(src=r"assets/positif/CastleWC_newportBay.png",width='50%',id="positif-newportBay", style= {'display': 'none'}),
+                html.Img(src=r"assets/positif/CastleWC_newYork.png",width='50%',id="positif-newYork", style= {'display': 'none'}),
+                html.Img(src=r"assets/positif/CastleWC_santaFe.png",width='50%',id="positif-santaFe", style= {'display': 'none'}),
+                html.Img(src=r"assets/positif/CastleWC_sequoiaLodge.png",width='50%',id="positif-sequoiLodge", style= {'display': 'none'})
              ], id="hotel-positif", style= {'display': 'none'}),
              
              html.Div([
-                html.Img(src=r"assets/négatif/CastleWC_cheyenne.png",width='20%'),
-                html.Img(src=r"assets/négatif/CastleWC_davyCrockettRanch.png",width='20%'),
-                html.Img(src=r"assets/négatif/CastleWC_newportBay.png",width='20%'),
-                html.Img(src=r"assets/négatif/CastleWC_newYork.png",width='20%'),
-                html.Img(src=r"assets/négatif/CastleWC_santaFe.png",width='20%'),
-                html.Img(src=r"assets/négatif/CastleWC_sequoiaLodge.png",width='20%')
+                  dcc.Dropdown(
+                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
+                         value="1",
+                         style={'font-size': 20},
+                         clearable = False,
+                         id="liste_choix_hotel_negatif"
+                   ),
+                html.Img(src=r"assets/négatif/CastleWC_cheyenne.png",width='50%',id="négatif-cheyenne", style= {'display': 'none'}),
+                html.Img(src=r"assets/négatif/CastleWC_davyCrockettRanch.png",width='50%',id="négatif-davyCrockettRanch", style= {'display': 'none'}),
+                html.Img(src=r"assets/négatif/CastleWC_newportBay.png",width='50%',id="négatif-newportBay", style= {'display': 'none'}),
+                html.Img(src=r"assets/négatif/CastleWC_newYork.png",width='50%',id="négatif-newYork", style= {'display': 'none'}),
+                html.Img(src=r"assets/négatif/CastleWC_santaFe.png",width='50%',id="négatif-santaFe", style= {'display': 'none'}),
+                html.Img(src=r"assets/négatif/CastleWC_sequoiaLodge.png",width='50%',id="négatif-sequoiLodge", style= {'display': 'none'})
              ], id="hotel-negatif", style= {'display': 'none'})
         ], id="hotel-tab", style= {'display': 'none'}),
         html.Div([
@@ -397,6 +442,303 @@ def DateChangeCorpus(value):
                 {'display': 'block'}]
     
     
+@app.callback([Output('titre-2019', 'style'),
+               Output('titre-2020', 'style'),
+               Output('titre-2021', 'style'),
+               Output('titre-2022', 'style'),
+               Output('titre-2023', 'style')
+               ],
+               [Input('liste_choix_date_titre', 'value')])
+
+def DateChangeTitre(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+    
+@app.callback([Output('positif-2019', 'style'),
+               Output('positif-2020', 'style'),
+               Output('positif-2021', 'style'),
+               Output('positif-2022', 'style'),
+               Output('positif-2023', 'style')
+               ],
+               [Input('liste_choix_date_positif', 'value')])
+
+def DateChangePositif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+
+@app.callback([Output('négatif-2019', 'style'),
+               Output('négatif-2020', 'style'),
+               Output('négatif-2021', 'style'),
+               Output('négatif-2022', 'style'),
+               Output('négatif-2023', 'style')
+               ],
+               [Input('liste_choix_date_negatif', 'value')])
+
+def DateChangeNégatif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+
+
+@app.callback([Output('titre-cheyenne', 'style'),
+               Output('titre-davyCrockettRanch', 'style'),
+               Output('titre-newportBay', 'style'),
+               Output('titre-newYork', 'style'),
+               Output('titre-santaFe', 'style'),
+               Output('titre-sequoiLodge', 'style')
+               ],
+               [Input('liste_choix_hotel_titre', 'value')])
+
+def HotelChangeTitre(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "6":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+
+@app.callback([Output('positif-cheyenne', 'style'),
+               Output('positif-davyCrockettRanch', 'style'),
+               Output('positif-newportBay', 'style'),
+               Output('positif-newYork', 'style'),
+               Output('positif-santaFe', 'style'),
+               Output('positif-sequoiLodge', 'style')
+               ],
+               [Input('liste_choix_hotel_positif', 'value')])
+
+def HotelChangePositif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "6":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+
+@app.callback([Output('négatif-cheyenne', 'style'),
+               Output('négatif-davyCrockettRanch', 'style'),
+               Output('négatif-newportBay', 'style'),
+               Output('négatif-newYork', 'style'),
+               Output('négatif-santaFe', 'style'),
+               Output('négatif-sequoiLodge', 'style')
+               ],
+               [Input('liste_choix_hotel_negatif', 'value')])
+
+def HotelChangeNegatif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "2":
+        return [{'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "3":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "4":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'},
+                {'display': 'none'}]
+    if value == "5":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'},
+                {'display': 'none'}]
+    if value == "6":
+        return [{'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'none'},
+                {'display': 'block'}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 @app.callback( [Output('hotel-titre', 'style'),
                 Output('hotel-positif', 'style'),
