@@ -15,7 +15,7 @@ from wordcloud import WordCloud
 
 #Dash
 import dash
-from dash import Dash, html, dcc, Input, Output, State
+from dash import Dash, html, dcc, Input, Output, State, ctx
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
@@ -32,9 +32,8 @@ from Lib import nettoyage, loopScraping, rawToBDD
 from analyse_date import analyseDate
 from Analyse_pays import analysePays
 from analyse_hotel import analyseHotel
+
 #Connection à la Base de donnée
-
-
 try:
     connection = mysql.connector.connect(host='localhost',
                                          database='disney_avis_booking',
@@ -78,12 +77,14 @@ def preparation(disney):
      
     date_sejour = disney["Date séjour"].tolist()
     date_sejour=[dateparser.parse(date) for date in date_sejour]
+    global annee
     annee=[date.year for date in date_sejour]
     
     
     # Sélection des pays
     print("Sélection des pays")
     # On crée une une liste contenant la liste des pays sans doublons 
+    global liste_pays
     liste_pays = list(set(disney["Pays"]))
     
     # On choisis uniquement les pays avec plus de 200 commentaires
@@ -137,13 +138,6 @@ TABPANEL = dbc.Container([
     )
 ])
 
-TabAnalyse = dbc.Tabs([
-            dbc.Tab(label="Date", tab_id="date"),
-            dbc.Tab(label="Pays", tab_id="pays"),
-            dbc.Tab(label="Hôtel", tab_id="hotel"),
-            dbc.Tab(label="Mots liés", tab_id="lies")    
-            ], id="tabPanelAnalyse", active_tab="date"),
-
 #Content
 PageContent = dbc.Container([
     dcc.Store("disney"),
@@ -168,198 +162,7 @@ PageContent = dbc.Container([
         
     ], id="data-tab", style= {'display': 'none'}),
     html.Div([
-        TabAnalyse,
-        html.Div([
-            #Date
-            # dcc.DatePickerRange(
-            #     display_format='M/Y',
-            #     start_date=min(date_sejour),
-            #     end_date=max(date_sejour)
-            #  )
-            dcc.Dropdown(
-                   options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
-                   value="1",
-                   style={'font-size': 20},
-                   clearable = False,
-                   id="liste_choix_corpus_date"
-             ),
-            html.Div([
-                dcc.Dropdown(
-                       options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
-                       value="1",
-                       style={'font-size': 20},
-                       clearable = False,
-                       id="liste_choix_date_titre"
-                 ),
-                
-                
-               html.Img(src=r"assets/titre/CastleWC_2019.png",width='50%', id="titre-2019", style= {'display': 'none'}),
-               html.Img(src=r"assets/titre/CastleWC_2020.png",width='50%', id="titre-2020", style= {'display': 'none'}),
-               html.Img(src=r"assets/titre/CastleWC_2021.png",width='50%', id="titre-2021", style= {'display': 'none'}),
-               html.Img(src=r"assets/titre/CastleWC_2022.png",width='50%', id="titre-2022", style= {'display': 'none'}),
-               html.Img(src=r"assets/titre/CastleWC_2023.png",width='50%', id="titre-2023", style= {'display': 'none'})
-            ], id="date-titre", style= {'display': 'none'}),
-            
-            html.Div([
-                    dcc.Dropdown(
-                           options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
-                           value="1",
-                           style={'font-size': 20},
-                           clearable = False,
-                           id="liste_choix_date_positif"
-                     ),
-               html.Img(src=r"assets/positif/CastleWC_2019.png",width='50%',id="positif-2019", style= {'display': 'none'}),
-               html.Img(src=r"assets/positif/CastleWC_2020.png",width='50%',id="positif-2020", style= {'display': 'none'}),
-               html.Img(src=r"assets/positif/CastleWC_2021.png",width='50%',id="positif-2021", style= {'display': 'none'}),
-               html.Img(src=r"assets/positif/CastleWC_2022.png",width='50%',id="positif-2022", style= {'display': 'none'}),
-               html.Img(src=r"assets/positif/CastleWC_2023.png",width='50%',id="positif-2023", style= {'display': 'none'})
-            ], id="date-positif", style= {'display': 'none'}),
-            
-            html.Div([
-                    dcc.Dropdown(
-                           options={"1":'2019', "2":'2020', "3":'2021',"4":"2022","5":"2023"},
-                           value="1",
-                           style={'font-size': 20},
-                           clearable = False,
-                           id="liste_choix_date_negatif"
-                     ),
-               html.Img(src=r"assets/négatif/CastleWC_2019.png",width='50%',id="négatif-2019", style= {'display': 'none'}),
-               html.Img(src=r"assets/négatif/CastleWC_2020.png",width='50%',id="négatif-2020", style= {'display': 'none'}),
-               html.Img(src=r"assets/négatif/CastleWC_2021.png",width='50%',id="négatif-2021", style= {'display': 'none'}),
-               html.Img(src=r"assets/négatif/CastleWC_2022.png",width='50%',id="négatif-2022", style= {'display': 'none'}),
-               html.Img(src=r"assets/négatif/CastleWC_2023.png",width='50%',id="négatif-2023", style= {'display': 'none'})
-            ], id="date-negatif", style= {'display': 'none'})
-            
-        ], id="date-tab", style= {'display': 'none'}),
-        html.Div([
-            #Pays
-            dcc.Dropdown(
-                       options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
-                       value="1",
-                       style={'font-size': 20},
-                       clearable = False,
-                       id="liste_choix_corpus_pays"
-                 ),
-                
-
-                
-                html.Div([
-                    dcc.Dropdown(
-                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
-                           value="1",
-                           style={'font-size': 20},
-                           clearable = False,
-                           id="liste_choix_pays_titre"
-                     ),
-                    
-                   html.Img(src=r"assets/titre/CastleWC_Allemagne.png", width='50%', id="titre-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Belgique.png",width='50%', id="titre-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Espagne.png",width='50%', id="titre-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_France.png",width='50%', id="titre-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Italie.png",width='50%', id="titre-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Pays-Bas.png",width='50%', id="titre-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Royaume-Uni.png",width='50%', id="titre-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/titre/CastleWC_Suisse.png",width='50%', id="titre-Suisse", style= {'display': 'none'})
-                ], id="pays-titre", style= {'display': 'none'}),
-                
-                html.Div([
-                    dcc.Dropdown(
-                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
-                           value="1",
-                           style={'font-size': 20},
-                           clearable = False,
-                           id="liste_choix_pays_positif"
-                     ),
-                   html.Img(src=r"assets/positif/CastleWC_Allemagne.png", width='50%', id="positif-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Belgique.png",width='50%', id="positif-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Espagne.png",width='50%', id="positif-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_France.png",width='50%', id="positif-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Italie.png",width='50%', id="positif-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Pays-Bas.png",width='50%', id="positif-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Royaume-Uni.png",width='50%', id="positif-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/positif/CastleWC_Suisse.png",width='50%', id="positif-Suisse", style= {'display': 'none'})
-                ], id="pays-positif", style= {'display': 'none'}),
-                
-                html.Div([
-                    dcc.Dropdown(
-                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
-                           value="1",
-                           style={'font-size': 20},
-                           clearable = False,
-                           id="liste_choix_pays_negatif"
-                     ),
-                     
-                   html.Img(src=r"assets/négatif/CastleWC_Allemagne.png", width='50%', id="négatif-Allemagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Belgique.png",width='50%', id="négatif-Belgique", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Espagne.png",width='50%', id="négatif-Espagne", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_France.png",width='50%', id="négatif-France", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Italie.png",width='50%', id="négatif-Italie", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Pays-Bas.png",width='50%', id="négatif-Pays-Bas", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Royaume-Uni.png",width='50%', id="négatif-Royaume-Uni", style= {'display': 'none'}),
-                   html.Img(src=r"assets/négatif/CastleWC_Suisse.png",width='50%', id="négatif-Suisse", style= {'display': 'none'})
-                ], id="pays-negatif", style= {'display': 'none'})
-        ], id="pays-tab", style= {'display': 'none'}),
-        html.Div([
-            #Hôtel
-            dcc.Dropdown(
-                    options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
-                    value="1",
-                    style={'font-size': 20},
-                    clearable = False,
-                    id="liste_choix_corpus_hotel"
-              ),
-             html.Div([
-                  dcc.Dropdown(
-                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
-                         value="1",
-                         style={'font-size': 20},
-                         clearable = False,
-                         id="liste_choix_hotel_titre"
-                   ),
-                html.Img(src=r"assets/titre/CastleWC_cheyenne.png",width='50%',id="titre-cheyenne", style= {'display': 'none'}),
-                html.Img(src=r"assets/titre/CastleWC_davyCrockettRanch.png",width='50%',id="titre-davyCrockettRanch", style= {'display': 'none'}),
-                html.Img(src=r"assets/titre/CastleWC_newportBay.png",width='50%',id="titre-newportBay", style= {'display': 'none'}),
-                html.Img(src=r"assets/titre/CastleWC_newYork.png",width='50%',id="titre-newYork", style= {'display': 'none'}),
-                html.Img(src=r"assets/titre/CastleWC_santaFe.png",width='50%',id="titre-santaFe", style= {'display': 'none'}),
-                html.Img(src=r"assets/titre/CastleWC_sequoiaLodge.png",width='50%',id="titre-sequoiLodge", style= {'display': 'none'})
-             ], id="hotel-titre", style= {'display': 'none'}),
-             
-             html.Div([
-                  dcc.Dropdown(
-                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
-                         value="1",
-                         style={'font-size': 20},
-                         clearable = False,
-                         id="liste_choix_hotel_positif"
-                   ),
-                html.Img(src=r"assets/positif/CastleWC_cheyenne.png",width='50%',id="positif-cheyenne", style= {'display': 'none'}),
-                html.Img(src=r"assets/positif/CastleWC_davyCrockettRanch.png",width='50%',id="positif-davyCrockettRanch", style= {'display': 'none'}),
-                html.Img(src=r"assets/positif/CastleWC_newportBay.png",width='50%',id="positif-newportBay", style= {'display': 'none'}),
-                html.Img(src=r"assets/positif/CastleWC_newYork.png",width='50%',id="positif-newYork", style= {'display': 'none'}),
-                html.Img(src=r"assets/positif/CastleWC_santaFe.png",width='50%',id="positif-santaFe", style= {'display': 'none'}),
-                html.Img(src=r"assets/positif/CastleWC_sequoiaLodge.png",width='50%',id="positif-sequoiLodge", style= {'display': 'none'})
-             ], id="hotel-positif", style= {'display': 'none'}),
-             
-             html.Div([
-                  dcc.Dropdown(
-                         options={"1":'Hôtel Cheyenene', "2":'Hôtel Davy Crockett Ranch', "3":'Hôtel NewPort Bay', "4":"Hôtel New York", "5":"Hôtel Santa Fe ", "6":"Hôtel Sequoia Lodge"},
-                         value="1",
-                         style={'font-size': 20},
-                         clearable = False,
-                         id="liste_choix_hotel_negatif"
-                   ),
-                html.Img(src=r"assets/négatif/CastleWC_cheyenne.png",width='50%',id="négatif-cheyenne", style= {'display': 'none'}),
-                html.Img(src=r"assets/négatif/CastleWC_davyCrockettRanch.png",width='50%',id="négatif-davyCrockettRanch", style= {'display': 'none'}),
-                html.Img(src=r"assets/négatif/CastleWC_newportBay.png",width='50%',id="négatif-newportBay", style= {'display': 'none'}),
-                html.Img(src=r"assets/négatif/CastleWC_newYork.png",width='50%',id="négatif-newYork", style= {'display': 'none'}),
-                html.Img(src=r"assets/négatif/CastleWC_santaFe.png",width='50%',id="négatif-santaFe", style= {'display': 'none'}),
-                html.Img(src=r"assets/négatif/CastleWC_sequoiaLodge.png",width='50%',id="négatif-sequoiLodge", style= {'display': 'none'})
-             ], id="hotel-negatif", style= {'display': 'none'})
-        ], id="hotel-tab", style= {'display': 'none'}),
-        html.Div([
-            #Mots liés
-            html.P("Mots liés")
-        ], id="lies-tab", style= {'display': 'none'})
+        #Construction auto
     ], id="analyse-tab", style= {'display': 'none'})
 ])
 
@@ -395,700 +198,164 @@ def tabChangeData(value):
     if value == "getData":
         return [{'display': 'none'},
                 {'display': 'block'}]
+
+@app.callback([Output("analyse-tab", "children")],
+              [Input("no-output", "children")])
+def constructionAnalyseTab(n_clicks):
+    children = []
+    optionsDate = {k: k for k in list(map(str, list(set(annee))))}
+    optionsPays = {k: k for k in liste_pays}
+    optionsHotel = {k: k for k in list(set(disney.hotel))}
     
+    TabAnalyse = dbc.Tabs([
+        dbc.Tab(label="Date", tab_id="date"),
+        dbc.Tab(label="Pays", tab_id="pays"),
+        dbc.Tab(label="Hôtel", tab_id="hotel")   
+    ], id="tabPanelAnalyse", active_tab="date")
+    
+    children.append(TabAnalyse)
+    
+    for dimension in ["date","pays","hotel"]:
+        
+        dimensionTab = html.Div([], id=dimension+"-tab", style= {'display': 'none'})
+        
+        ddMesure = dcc.Dropdown(
+            options={"titre":'Titre', "positif":'Commentaires positifs', "négatif":'Commentaires négatifs'},
+            style={'font-size': 20},
+            clearable = False,
+            id="dd_"+dimension+"_mesure")
+        
+        dimensionTab.children.append(ddMesure)
+        
+        for mesure in ["titre","positif","négatif"]:
+            
+            mesureDiv = html.Div([], id=dimension+"-"+mesure, style= {'display': 'none'})
+            
+            if dimension == "date":
+                options = optionsDate
+            elif dimension == "pays":
+                options = optionsPays
+            elif dimension == "hotel":
+                options = optionsHotel
+                
+            ddDimension =  dcc.Dropdown(
+                options=options,
+                style={'font-size': 20},
+                clearable = False,
+                id="dd_"+dimension+"_"+mesure)
+            
+            mesureDiv.children.append(ddDimension)
+            
+            for modalite in options.values():
+                img = html.Img(src=r"assets/"+mesure+"/CastleWC_"+modalite+".png", width='50%', id=mesure+"-"+modalite, style= {'display': 'none'})
+                mesureDiv.children.append(img)
+                
+            dimensionTab.children.append(mesureDiv)
+            
+        children.append(dimensionTab)
+
+    return [children]
+
+#Preparation callback
+optionsDate = {k: k for k in list(map(str, list(set(annee))))}
+optionsPays = {k: k for k in liste_pays}
+optionsHotel = {k: k for k in list(set(disney.hotel))}
+
+outputs = []
+inputs = []
+for dimension in ["date","pays","hotel"]:
+    
+    inputs.append(Input("dd_"+dimension+"_mesure", "value"))
+    
+    for mesure in ["titre","positif","négatif"]:
+        
+        inputs.append(Input("dd_"+dimension+"_"+mesure, "value"))
+        outputs.append(Output(dimension+"-"+mesure, "style"))
+        
+        if dimension == "date":
+            options = optionsDate
+        elif dimension == "pays":
+            options = optionsPays
+        elif dimension == "hotel":
+            options = optionsHotel
+        
+        for modalite in options.values():
+            outputs.append(Output(mesure+"-"+modalite, "style"))
+            
+outIds = [output.component_id for output in outputs]
+inpIds = [inp.component_id for inp in inputs]
+
 @app.callback([Output('date-tab', 'style'),
                Output('pays-tab', 'style'), 
-               Output('hotel-tab', 'style'),
-               Output('lies-tab', 'style')],
+               Output('hotel-tab', 'style')],
                [Input('tabPanelAnalyse', 'active_tab')])
 def tabChangeAnalyse(value):
     if value == "date":
         return [{'display': 'block'},
                 {'display': 'none'},
                 {'display': 'none'},
-                {'display': 'none'}]
+                ]
     if value == "pays":
         return [{'display': 'none'},
                 {'display': 'block'},
-                {'display': 'none'},
                 {'display': 'none'}]
     if value == "hotel":
         return [{'display': 'none'},
                 {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
+                {'display': 'block'}]
     if value == "lies":
         return [{'display': 'none'},
                 {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
+                {'display': 'none'}]
+        
+@app.callback(outputs,
+              inputs)
+def showMask(value1,value2,value3,value4,value5,value6,value7,value8,value9,value10,value11,value12):
     
-@app.callback([Output('date-titre', 'style'),
-               Output('date-positif', 'style'),
-               Output('date-negatif', 'style')],
-               [Input('liste_choix_corpus_date', 'value')])
-def DateChangeCorpus(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
+    trigger = ctx.triggered_id
+    if trigger == None:
+        return dash.no_update
+    res = [{'display': 'none'} for i in range(len(outIds))]
     
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
+    values = [value1,value2,value3,value4,value5,value6,value7,value8,value9,value10,value11,value12]
+    value = values[inpIds.index(trigger)]
     
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-    
-    
-@app.callback([Output('titre-2019', 'style'),
-               Output('titre-2020', 'style'),
-               Output('titre-2021', 'style'),
-               Output('titre-2022', 'style'),
-               Output('titre-2023', 'style')
-               ],
-               [Input('liste_choix_date_titre', 'value')])
-
-def DateChangeTitre(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-    
-@app.callback([Output('positif-2019', 'style'),
-               Output('positif-2020', 'style'),
-               Output('positif-2021', 'style'),
-               Output('positif-2022', 'style'),
-               Output('positif-2023', 'style')
-               ],
-               [Input('liste_choix_date_positif', 'value')])
-
-def DateChangePositif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-
-@app.callback([Output('négatif-2019', 'style'),
-               Output('négatif-2020', 'style'),
-               Output('négatif-2021', 'style'),
-               Output('négatif-2022', 'style'),
-               Output('négatif-2023', 'style')
-               ],
-               [Input('liste_choix_date_negatif', 'value')])
-
-def DateChangeNégatif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-
-
-@app.callback([Output('titre-cheyenne', 'style'),
-               Output('titre-davyCrockettRanch', 'style'),
-               Output('titre-newportBay', 'style'),
-               Output('titre-newYork', 'style'),
-               Output('titre-santaFe', 'style'),
-               Output('titre-sequoiLodge', 'style')
-               ],
-               [Input('liste_choix_hotel_titre', 'value')])
-
-def HotelChangeTitre(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "6":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-
-@app.callback([Output('positif-cheyenne', 'style'),
-               Output('positif-davyCrockettRanch', 'style'),
-               Output('positif-newportBay', 'style'),
-               Output('positif-newYork', 'style'),
-               Output('positif-santaFe', 'style'),
-               Output('positif-sequoiLodge', 'style')
-               ],
-               [Input('liste_choix_hotel_positif', 'value')])
-
-def HotelChangePositif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "6":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-
-@app.callback([Output('négatif-cheyenne', 'style'),
-               Output('négatif-davyCrockettRanch', 'style'),
-               Output('négatif-newportBay', 'style'),
-               Output('négatif-newYork', 'style'),
-               Output('négatif-santaFe', 'style'),
-               Output('négatif-sequoiLodge', 'style')
-               ],
-               [Input('liste_choix_hotel_negatif', 'value')])
-
-def HotelChangeNegatif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "2":
-        return [{'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "3":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "4":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'},
-                {'display': 'none'}]
-    if value == "5":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'},
-                {'display': 'none'}]
-    if value == "6":
-        return [{'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'none'},
-                {'display': 'block'}]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-@app.callback( [Output('hotel-titre', 'style'),
-                Output('hotel-positif', 'style'),
-                Output('hotel-negatif', 'style')
-                ],
-                [Input('liste_choix_corpus_hotel', 'value')])
-def HotelChangeCorpus(value):
-    if value == "1":
-        return [{'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "2":
-        return [{'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'}]
-     
-    if value == "3":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'}]   
-
-@app.callback( [Output('pays-titre', 'style'),
-                Output('pays-positif', 'style'),
-                Output('pays-negatif', 'style')
-                ],
-                [Input('liste_choix_corpus_pays', 'value')])
-def PaysChangeCorpus(value):
-    if value == "1":
-        return [{'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "2":
-        return [{'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'}]
-     
-    if value == "3":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'}]
-
-@app.callback( [Output('titre-Allemagne', 'style'),
-                Output('titre-Belgique', 'style'),
-                Output('titre-Espagne', 'style'),
-                Output('titre-France', 'style'),
-                Output('titre-Italie', 'style'),
-                Output('titre-Pays-Bas', 'style'),
-                Output('titre-Royaume-Uni', 'style'),
-                Output('titre-Suisse', 'style')
-                ],
-                [Input('liste_choix_pays_titre', 'value')])
-def PaysChangeTitre(value):
-    if value == "1":
-        return [{'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "2":
-        return [{'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "3":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "4":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "5":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "6":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "7":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'}]
-    
-    if value == "8":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'}]
-
-@app.callback( [Output('positif-Allemagne', 'style'),
-                Output('positif-Belgique', 'style'),
-                Output('positif-Espagne', 'style'),
-                Output('positif-France', 'style'),
-                Output('positif-Italie', 'style'),
-                Output('positif-Pays-Bas', 'style'),
-                Output('positif-Royaume-Uni', 'style'),
-                Output('positif-Suisse', 'style')
-                ],
-                [Input('liste_choix_pays_positif', 'value')])
-def PaysChangePositif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "2":
-        return [{'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "3":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "4":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "5":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "6":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "7":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'}]
-    
-    if value == "8":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'}]
-
-@app.callback( [Output('négatif-Allemagne', 'style'),
-                Output('négatif-Belgique', 'style'),
-                Output('négatif-Espagne', 'style'),
-                Output('négatif-France', 'style'),
-                Output('négatif-Italie', 'style'),
-                Output('négatif-Pays-Bas', 'style'),
-                Output('négatif-Royaume-Uni', 'style'),
-                Output('négatif-Suisse', 'style')
-                ],
-              [Input('liste_choix_pays_negatif', 'value')])
-def PaysChangeNegatif(value):
-    if value == "1":
-        return [{'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "2":
-        return [{'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-     
-    if value == "3":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "4":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "5":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "6":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'},
-                 {'display': 'none'}]
-    
-    if value == "7":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'},
-                 {'display': 'none'}]
-    
-    if value == "8":
-        return [{'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'none'},
-                 {'display': 'block'}]  
-
+    for dimension in ["date","pays","hotel"]:
+        
+        if trigger == "dd_"+dimension+"_mesure":
+            outIndex = outIds.index(dimension+"-"+value)
+            res[outIndex] = {'display': 'block'}
+            return res
+        
+        for mesure in ["titre","positif","négatif"]:
+                    
+            if trigger == "dd_"+dimension+"_"+mesure:
+                outIndex = outIds.index(mesure+"-"+value)
+                res[outIndex] = {'display': 'block'}
+                outIndex = outIds.index(dimension+"-"+mesure)
+                res[outIndex] = {'display': 'block'}
+                return res
     
 @app.callback([Output("disney", "data")],
-              [Input('MAJ', 'n_clicks')])
-def MiseAJour(n_clicks):
+              [Input('MAJ', 'n_clicks'),
+               Input('Actu', 'n_clicks')])
+def MiseAJour_Actualisation(maj, actu):
     global disney
     global date
     global hotel
     global pays
     global connection
-    if n_clicks is not None:        
+    if maj is not None:
         newAvis = loopScraping.loopScraping(disney)
         date, pays = rawToBDD.StarToSQLInsert(newAvis, date, hotel, pays, connection)       
         disney = disney.append(newAvis)
-        disney.to_csv("data/disney.csv", index=False)  
-        
-    return [disney.to_dict('records')]
-
-@app.callback([Output("analyse-tab", "children")],
-              [Input('Actu', 'n_clicks')])
-def Actualisation(n_clicks):
-    if n_clicks is not None: 
-        children = []
-        global disney
+        disney.to_csv("data/disney.csv", index=False)
+        return [disney.to_dict("record")]
+    if actu is not None:
         preparation(disney)
-        children = children.append(TabAnalyse)
-        for dimension in ["date-tab","pays-tab","hotel-tab"]:
-            dimensionTab = html.Div([], id=dimension, style= {'display': 'none'})
-            for mesure in ["titre","positif","négatif"]:
-                
-        
-        
-    return 
+        print("préparation terminée")
+        return [disney.to_dict("record")]
+    raise PreventUpdate()
 
 #Lauch
 if __name__ == '__main__':
