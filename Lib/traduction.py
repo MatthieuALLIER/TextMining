@@ -15,5 +15,5 @@ def tradList(texts):
                 if detect(texts[i]) != "fr":
                     texts.loc[i] = translator.translate(texts[i])
             except:
-                texts[i] = None                
+                texts[i] = "Inconnu"                
     return texts
