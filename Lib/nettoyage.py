@@ -51,7 +51,7 @@ def nettoyageColAvis(disney, col):
     print("Nettoyage des "+col)
     
     # On enlève les inconnus dans les avis
-    index=[i for i in disney[col] if i != "Inconnu"]
+    index=[i for i in range(len(disney[col])) if disney[col][i] != "Inconnu"]
     clean = [disney[col][i] for i in index]
     
     # On nettoie

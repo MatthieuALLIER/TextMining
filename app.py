@@ -139,6 +139,7 @@ TABPANEL = dbc.Container([
 #Content
 PageContent = dbc.Container([
     dcc.Store("disney"),
+    html.Div([], id="no-output", style= {'display': 'none'}),
     html.Div([
         #Accueil
         html.P("Accueil")
@@ -154,6 +155,7 @@ PageContent = dbc.Container([
         ], id="kpi-tab", style= {'display': 'none'}),
         html.Div([
             html.Button('Mettre à jour', id='MAJ'),
+            html.Button('Actualiser les analyses', id='Actu')
         ], id="getData-tab", style= {'display': 'none'})
         
     ], id="data-tab", style= {'display': 'none'}),
@@ -628,7 +630,7 @@ def PaysChangePositif(value):
                 Output('négatif-Pays-Bas', 'style'),
                 Output('négatif-Royaume-Uni', 'style'),
                 Output('négatif-Suisse', 'style')
-                ],-                [Input('liste_choix_pays_negatif', 'value')])
+                ],[Input('liste_choix_pays_negatif', 'value')])
 def PaysChangeNegatif(value):
     if value == "1":
         return [{'display': 'block'},
@@ -727,13 +729,13 @@ def MiseAJour(n_clicks):
         
     return [disney.to_dict('records')]
 
-@app.callback([Output("disney", "data")],
+@app.callback([Output("no-output", "style")],
               [Input('Actu', 'n_clicks')])
 def Actualisation(n_clicks):
-    global disney
-    if n_clicks is not None:
+    if n_clicks is not None: 
+        global disney
         preparation(disney)
-    return [disney.to_dict('records')]
+    return [{"display":"none"}]
 
 #Lauch
 if __name__ == '__main__':
