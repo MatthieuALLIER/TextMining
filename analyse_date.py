@@ -11,7 +11,8 @@ from PIL import Image
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
-
+from Lib import nettoyage
+import fonctions_analyse as fa
 def analyseDate(compos_clean, annee, index, type_analyse):
     
     annee= [annee[i] for i in index]
@@ -44,5 +45,17 @@ def analyseDate(compos_clean, annee, index, type_analyse):
         plt.imshow(wc)
         plt.axis("off")
         plt.savefig("assets/" + str(type_analyse)+ "/CastleWC_"+str(an)+".png")
-        
-    return mdtSumYear
+    
+    corpus = []
+    for i in range(0,len(compos_clean)):
+       corpus.append(nettoyage.nettoyage_doc(compos_clean))
+    
+    dico = fa.cr_modele(corpus)
+    
+    sim = fa.mots_similaires(dico, ['séjour','personnel','prix','bien','super','cher'])
+    
+    fa.graph_association(dico, ['séjour','personnel','prix','bien','super','cher'])
+    
+    g1,mat1, cluster = fa.my_cah_from_doc2vec(corpus,dico,seuil=10)
+     
+    return mdtSumYear, sim, cluster

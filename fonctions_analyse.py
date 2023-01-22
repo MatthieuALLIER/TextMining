@@ -25,7 +25,7 @@ nltk.download('wordnet')
 
 #Importation df pour test
 disney = pd.read_csv("data/disney.csv") 
-
+df = disney
 ############################################################################################################################################
 #                                                                                                                                          # 
 #  FONCTIONS CREATION "SOUS" DATA FRAME ET CORPUS SELON FILTRES SUR pays, note, hotel, date_sejour, date_commentaire, positif, negatif     #
@@ -133,7 +133,7 @@ def mots_similaires(dico, liste_mots, n_proches=10):
 ############################################################################################################################################
     
 def graph_association(dico, liste_mots):
-    df = pandas.DataFrame(dico.vectors,columns=['V1','V2'],index=dico.key_to_index.keys())
+    df = pd.DataFrame(dico.vectors,columns=['V1','V2'],index=dico.key_to_index.keys())
     dfListe = df.loc[liste_mots,:]
 
     #graphique dans le plan
@@ -248,29 +248,31 @@ def my_cah_from_doc2vec(corpus,trained,seuil=1.0,nbTermes=7):
     print("Dim. matrice documents-termes = {}".format(mdt.shape))
     
     #passer en revue les groupes
+    res_cluster = ""
+    
     for num_cluster in range(numpy.max(grCAH)):
-        print("")
+        res_cluster += "\n"
         #numéro du cluster à traiter
-        print("Numero du cluster = {}".format(num_cluster+1))
+        res_cluster += "Numero du cluster = " + str(num_cluster+1)+"\n"
         groupe = numpy.where(grCAH==num_cluster+1,1,0)
         effectifs = numpy.unique(groupe,return_counts=True)
-        print("Effectifs = {}".format(effectifs[1][1]))
+        res_cluster += "Effectifs = " + str(effectifs[1][1])+"\n"
         #calcul de co-occurence
         cooc = numpy.apply_along_axis(func1d=lambda x: numpy.sum(x*groupe),axis=0,arr=mdt)
         #print(cooc)
         #création d'un data frame intermédiaire
-        tmpDF = pandas.DataFrame(data=cooc,columns=['freq'],index=parseur.get_feature_names_out())    
+        tmpDF = pd.DataFrame(data=cooc,columns=['freq'],index=parseur.get_feature_names_out())    
         #affichage des "nbTermes" termes les plus fréquents
-        print(tmpDF.sort_values(by='freq',ascending=False).iloc[:nbTermes,:])
+        res_cluster += str(tmpDF.sort_values(by='freq',ascending=False).iloc[:nbTermes,:])+"\n"
         
     #renvoyer l'indicateur d'appartenance aux groupes
-    return grCAH, mat
+    return grCAH, mat, res_cluster
 
 #*** fin de la fonction
 
 
 #EXEMPLE D'APPEL DE LA FONCTION
-g1,mat1 = my_cah_from_doc2vec(corpus,dico,seuil=10)
+#g1,mat1 = my_cah_from_doc2vec(corpus,dico,seuil=10)
 
 
 
