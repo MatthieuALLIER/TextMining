@@ -48,7 +48,7 @@ def analysePays(compos_clean, pays, index, type_analyse):
         
     corpus = []
     for i in range(0,len(compos_clean)):
-       corpus.append(nettoyage.nettoyage_doc(compos_clean))
+       corpus.append(nettoyage.nettoyage_doc(compos_clean[i]))
     
     dico = fa.cr_modele(corpus)
     
