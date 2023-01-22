@@ -675,7 +675,8 @@ def PaysChangePositif(value):
                 Output('négatif-Pays-Bas', 'style'),
                 Output('négatif-Royaume-Uni', 'style'),
                 Output('négatif-Suisse', 'style')
-                ],-                [Input('liste_choix_pays_negatif', 'value')])
+                ],
+               [Input('liste_choix_pays_negatif', 'value')])
 def PaysChangeNegatif(value):
     if value == "1":
         return [{'display': 'block'},
