@@ -20,6 +20,57 @@ from analyse_date import analyseDate
 from Analyse_pays import analysePays
 from analyse_hotel import analyseHotel
 
+import mysql.connector
+from mysql.connector import Error
+
+from Lib import rawToBDD, nettoyage, scrapping, traitement, traduction
+
+#Connection à la Base de donnée
+try:
+    connection = mysql.connector.connect(host='localhost',
+                                         database='disney_avis_booking',
+                                         user='root',
+                                         password='')
+    if connection.is_connected():
+        db_Info = connection.get_server_info()
+        print("Connecté à MySQL Server version ", db_Info)
+        cursor = connection.cursor()
+        cursor.execute("select database();")
+        record = cursor.fetchone()
+        print("Vous êtes connecté à la base : ", record)
+
+except Error as e:
+    print("Error while connecting to MySQL", e)
+
+#Importation des données
+disney = rawToBDD.reqToBDD(connection, "SELECT * FROM disney", "select")
+disney = pd.DataFrame(disney, columns=['Prenom', 'Note', 'Pays', 'Titre', 'Positif',
+                                       'Négatif', 'Date séjour', 'Date commentaire',
+                                       'hotel'])
+
+date = rawToBDD.reqToBDD(connection, "SELECT * FROM date", "select")
+date = pd.DataFrame(date, columns=['date', 'id_date'])
+
+hotel = rawToBDD.reqToBDD(connection, "SELECT * FROM hotel", "select")
+hotel = pd.DataFrame(hotel, columns=['hotel', 'id_hotel'])
+
+pays = rawToBDD.reqToBDD(connection, "SELECT * FROM pays", "select")
+pays = pd.DataFrame(disney, columns=['pays', 'id_pays'])
+
+#Jointure en mode replace
+disney["Date séjour"] = disney["Date séjour"].replace(list(date.id_date), list(date.date))
+disney["hotel"] = disney["hotel"].replace(list(hotel.id_hotel), list(hotel.hotel))
+disney["Pays"] = disney["Pays"].replace(list(pays.id_pays), list(pays.pays))
+disney.Note = pd.to_numeric(disney.Note)
+
+#KPIs
+nbAvis = len(disney)
+nbGood = len(disney[disney.Positif != "Inconnu"])
+nbBad = len(disney[disney.Négatif != "Inconnu"])
+noteAvg = round(disney.Note.mean(), 2)
+noteMin = min(disney.Note)
+noteMax = max(disney.Note)
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='Disney textmining')
 server = app.server
 print("Importation des données")
