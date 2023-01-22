@@ -208,8 +208,41 @@ PageContent = dbc.Container([
             html.P("Pays")
         ], id="pays-tab", style= {'display': 'none'}),
         html.Div([
-            #Hôtel
-            html.P("Hôtel")
+             #Hôtel
+             dcc.Dropdown(
+                    options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
+                    value="1",
+                    style={'color': 'Pink', 'font-size': 20},
+                    clearable = False,
+                    id="liste_choix_corpus_hotel"
+              ),
+             html.Div([
+                html.Img(src=r"assets/titre/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-titre", style= {'display': 'none'}),
+             
+             html.Div([
+                html.Img(src=r"assets/positif/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-positif", style= {'display': 'none'}),
+             
+             html.Div([
+                html.Img(src=r"assets/négatif/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-negatif", style= {'display': 'none'})
+             
         ], id="hotel-tab", style= {'display': 'none'}),
         html.Div([
             #Mots liés
