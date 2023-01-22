@@ -4,35 +4,39 @@ Transforme les données brutes en données à intégrer dans le modèle en étoi
 """
 import emoji
 
-def StarToSQLInsert(disney, date, hotel, pays):
+def StarToSQLInsert(disney, date, hotel, pays, connection):
     """
     creer le code sql des nouveaux individus
     """
-    disney = disney.fillna("Inconnu")
-    disney.Positif = [emoji.replace_emoji(text) for text in disney.Positif]
-    disney.Titre = [emoji.replace_emoji(text) for text in disney.Titre]
-    disney.Négatif = [emoji.replace_emoji(text) for text in disney.Négatif]
-    
-    query = "INSERT INTO disney VALUES "
-    for index, row in disney.iterrows():
+    if len(disney) != 0:
         
-        #Add modality if not exist
-        if row["Date séjour"] not in date.date.tolist():
-            date = AddModaliteDimension(row["Date séjour"], date, "date")
-        if row["Pays"] not in pays.pays.tolist():
-            pays = AddModaliteDimension(row["Pays"], pays, "pays")
+        disney = disney.fillna("Inconnu")
+        disney.Positif = [emoji.replace_emoji(text) for text in disney.Positif]
+        disney.Titre = [emoji.replace_emoji(text) for text in disney.Titre]
+        disney.Négatif = [emoji.replace_emoji(text) for text in disney.Négatif]
         
-        #Insert row
-        query += "('"+row["Prenom"]+"',"+str(row["Note"])+","
-        query += str(int(pays[pays["pays"]==row["Pays"]]["id_pays"]))+",'"
-        query += str(row["Titre"])+"','"+str(row["Positif"])+"','"+str(row["Négatif"])+"',"
-        query += str(int(date[date["date"]==row["Date séjour"]]["id_date"]))+",'"
-        query += row["Date commentaire"]+"',"
-        query += str(int(hotel[hotel["hotel"]==row["hotel"]]["id_hotel"]))+"),"
-    
-    query = query[:-1]
+        query = "INSERT INTO disney VALUES "
+        for index, row in disney.iterrows():
+            
+            #Add modality if not exist
+            if row["Date séjour"] not in date.date.tolist():
+                date = AddModaliteDimension(row["Date séjour"], date, "date")
+            if row["Pays"] not in pays.pays.tolist():
+                pays = AddModaliteDimension(row["Pays"], pays, "pays")
+            
+            #Insert row
+            query += "('"+row["Prenom"]+"',"+str(row["Note"])+","
+            query += str(int(pays[pays["pays"]==row["Pays"]]["id_pays"]))+",'"
+            query += str(row["Titre"])+"','"+str(row["Positif"])+"','"+str(row["Négatif"])+"',"
+            query += str(int(date[date["date"]==row["Date séjour"]]["id_date"]))+",'"
+            query += row["Date commentaire"]+"',"
+            query += str(int(hotel[hotel["hotel"]==row["hotel"]]["id_hotel"]))+"),"
+        print(query)
+        query = query[:-1]
+            
+        reqToBDD(connection, query, "insert")
         
-    reqToBDD(query)
+    return date, pays
         
     
 def AddModaliteDimension(modalite, table, dimension):
