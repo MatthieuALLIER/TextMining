@@ -127,7 +127,7 @@ class Fig :
 #Carte du monde avec nb de commentaire par pays
 
     def get_fig_map(self):
-        return fig = px.choropleth(data_frame=sel.__df_pays_nb,
+        return px.choropleth(data_frame=sel.__df_pays_nb,
                     locations='Pays',  # colonne contenant les noms des pays
                     locationmode='country names',
                     color='occ',  # colonne contenant le nombre d'occurrences
