@@ -111,14 +111,20 @@ def preparation(disney):
     negatifHotel = analyseHotel(negatif, disney.hotel, indexNegatif, "négatif")
     negatifPays = analysePays(negatif, disney.Pays, indexNegatifPays, "négatif")
     
-    #KPIs
-    nbAvis = len(disney)
-    nbGood = len(disney[disney.Positif != "Inconnu"])
-    nbBad = len(disney[disney.Négatif != "Inconnu"])
-    noteAvg = round(disney.Note.mean(), 2)
-    noteMin = min(disney.Note)
-    noteMax = max(disney.Note)
-
+preparation(disney)
+ 
+nbAvis = len(disney)
+nbGood = len(disney[disney.Positif != "Inconnu"])
+nbBad = len(disney[disney.Négatif != "Inconnu"])
+noteAvg = round(disney.Note.mean(), 2)
+noteMin = min(disney.Note)
+noteMax = max(disney.Note)
+dateMin = min(annee)
+dateMax = max(annee)
+nbPays = len(list(set(disney["Pays"])))
+nbPays200 = len(liste_pays)
+        
+    
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='Disney textmining')
 server = app.server    
 
@@ -152,8 +158,22 @@ PageContent = dbc.Container([
                     dbc.Tab(label="Acquisition", tab_id="getData")     
                 ], id="tabPanelData", active_tab="kpi"),
         html.Div([
-            #KPIs
-            html.P("KPIs")
+            html.Div([
+                html.P("Nombre d'avis : "+str(nbAvis)),
+                html.P("Nombre d'avis positifs : "+str(nbGood)),
+                html.P("Nombre d'avis négatifs : "+str(nbBad)),
+                html.P("Date minimum : "+str(dateMin)),
+                html.P("Date maximum : "+str(dateMax)),
+                html.P("Nombre de pays : "+str(nbPays)),
+                html.P("Nombre de pays avec plus de 200 avis : "+str(nbPays200)),
+                html.P("Notes : "),
+                html.P("Minimum : "+str(noteMin)),
+                html.P("Moyenne : "+str(noteAvg)),
+                html.P("Maximum : "+str(noteMax)),
+            ], style = {"width":"25%"}),
+            html.Div([
+                
+            ], style = {"width":"75%"})
         ], id="kpi-tab", style= {'display': 'none'}),
         html.Div([
             html.Button('Mettre à jour', id='MAJ'),
