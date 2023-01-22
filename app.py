@@ -136,6 +136,13 @@ TABPANEL = dbc.Container([
     )
 ])
 
+TabAnalyse = dbc.Tabs([
+            dbc.Tab(label="Date", tab_id="date"),
+            dbc.Tab(label="Pays", tab_id="pays"),
+            dbc.Tab(label="Hôtel", tab_id="hotel"),
+            dbc.Tab(label="Mots liés", tab_id="lies")    
+            ], id="tabPanelAnalyse", active_tab="date"),
+
 #Content
 PageContent = dbc.Container([
     dcc.Store("disney"),
@@ -160,12 +167,7 @@ PageContent = dbc.Container([
         
     ], id="data-tab", style= {'display': 'none'}),
     html.Div([
-        dbc.Tabs([
-                    dbc.Tab(label="Date", tab_id="date"),
-                    dbc.Tab(label="Pays", tab_id="pays"),
-                    dbc.Tab(label="Hôtel", tab_id="hotel"),
-                    dbc.Tab(label="Mots liés", tab_id="lies")    
-                ], id="tabPanelAnalyse", active_tab="date"),
+        TabAnalyse,
         html.Div([
             #Date
             # dcc.DatePickerRange(
@@ -730,13 +732,21 @@ def MiseAJour(n_clicks):
         
     return [disney.to_dict('records')]
 
-@app.callback([Output("no-output", "style")],
+@app.callback([Output("analyse-tab", "children")],
               [Input('Actu', 'n_clicks')])
 def Actualisation(n_clicks):
     if n_clicks is not None: 
+        children = []
         global disney
         preparation(disney)
-    return [{"display":"none"}]
+        children = children.append(TabAnalyse)
+        for dimension in ["date-tab","pays-tab","hotel-tab"]:
+            dimensionTab = html.Div([], id=dimension, style= {'display': 'none'})
+            for mesure in ["titre","positif","négatif"]:
+                
+        
+        
+    return 
 
 #Lauch
 if __name__ == '__main__':
