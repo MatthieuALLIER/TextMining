@@ -31,7 +31,6 @@ def StarToSQLInsert(disney, date, hotel, pays, connection):
             query += str(int(date[date["date"]==row["Date séjour"]]["id_date"]))+",'"
             query += row["Date commentaire"]+"',"
             query += str(int(hotel[hotel["hotel"]==row["hotel"]]["id_hotel"]))+"),"
-        print(query)
         query = query[:-1]
             
         reqToBDD(connection, query, "insert")
