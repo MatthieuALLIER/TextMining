@@ -9,21 +9,21 @@ import pandas as pd
 
 import dash
 from dash import Dash, html, dcc, Input, Output, State
+from dash.exceptions import PreventUpdate
 from wordcloud import WordCloud
 import dash_bootstrap_components as dbc
 
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date
-from Lib import nettoyage
+
+from Lib import nettoyage, loopScraping, scrapping, rawToBDD, traduction
 from analyse_date import analyseDate
 from Analyse_pays import analysePays
 from analyse_hotel import analyseHotel
 
 import mysql.connector
 from mysql.connector import Error
-
-from Lib import rawToBDD, nettoyage, scrapping, traitement, traduction
 
 #Connection à la Base de donnée
 try:
@@ -55,7 +55,7 @@ hotel = rawToBDD.reqToBDD(connection, "SELECT * FROM hotel", "select")
 hotel = pd.DataFrame(hotel, columns=['hotel', 'id_hotel'])
 
 pays = rawToBDD.reqToBDD(connection, "SELECT * FROM pays", "select")
-pays = pd.DataFrame(disney, columns=['pays', 'id_pays'])
+pays = pd.DataFrame(pays, columns=['pays', 'id_pays'])
 
 #Jointure en mode replace
 disney["Date séjour"] = disney["Date séjour"].replace(list(date.id_date), list(date.date))
@@ -73,102 +73,98 @@ noteMax = max(disney.Note)
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='Disney textmining')
 server = app.server
-print("Importation des données")
-disney=pd.read_csv("data/disney.csv")
 
-# # Passage de la colonne date_sejour en format date
-print("Formatage des dates")
-import dateparser 
-date_sejour = disney["Date séjour"].tolist()
-date_sejour=[dateparser.parse(date) for date in date_sejour]
-annee=[date.year for date in date_sejour]
+# # # Passage de la colonne date_sejour en format date
+# print("Formatage des dates")
+# import dateparser 
+# date_sejour = disney["Date séjour"].tolist()
+# date_sejour=[dateparser.parse(date) for date in date_sejour]
+# annee=[date.year for date in date_sejour]
 
 
-# Sélection des pays
-# On crée une une liste contenant la liste des pays sans doublons 
-liste_pays = disney["Pays"]
-liste_pays_unique = []
-for pays in liste_pays:
-    if pays not in liste_pays_unique:
-        liste_pays_unique.append(pays)
+# # Sélection des pays
+# # On crée une une liste contenant la liste des pays sans doublons 
+# liste_pays = disney["Pays"]
+# liste_pays_unique = []
+# for pays in liste_pays:
+#     if pays not in liste_pays_unique:
+#         liste_pays_unique.append(pays)
 
-# On choisis uniquement les pays avec plus de 200 commentaires
-liste_pays = []
-for pays in liste_pays_unique :
-    if len(disney[disney.Pays == pays])>=200:
-        liste_pays.append(pays)
-
-
-index_pays = [i for i in range(0,len(disney)) if disney.Pays[i] in liste_pays]
+# # On choisis uniquement les pays avec plus de 200 commentaires
+# liste_pays = []
+# for pays in liste_pays_unique :
+#     if len(disney[disney.Pays == pays])>=200:
+#         liste_pays.append(pays)
 
 
+# index_pays = [i for i in range(len(disney)) if disney.Pays[i] in liste_pays]
 
-# #### Nettoyage
-# Titre
-print("Nettoyage des titres")
-  # On enlève les inconnus dans les avis
-titre=nettoyage.nettoyage_corpus(disney.Titre)
-titre_join = [" ".join(w)for w in titre]
-# On enlève les inconnus dans les avis
-index=[i for i in range(len(titre_join)) if titre_join[i] != "inconnu"]
-titre_join = [titre_join[i] for i in index]
+# # #### Nettoyage
+# # Titre
+# print("Nettoyage des titres")
+# # On enlève les inconnus dans les avis
+# titre=nettoyage.nettoyage_corpus(disney.Titre)
+# titre_join = [" ".join(w)for w in titre]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(titre_join)) if titre_join[i] != "inconnu"]
+# titre_join = [titre_join[i] for i in index]
 
 
-# Fonction d'analyse par année pour les titres
-titredate=analyseDate(titre_join,annee,index,"titre")
+# # Fonction d'analyse par année pour les titres
+# titredate=analyseDate(titre_join,annee,index,"titre")
 
-# Fonction d'analyse par hotel pour les titres
-titrehotel = analyseHotel(titre_join,disney.hotel,index,"titre")
+# # Fonction d'analyse par hotel pour les titres
+# titrehotel = analyseHotel(titre_join,disney.hotel,index,"titre")
 
 
 
-# Analyse par pays
-index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
-titre_join_bis = [" ".join(w)for w in titre]
-titre_join_bis = [titre_join_bis[i] for i in index_bis]
-titrepays=analysePays(titre_join_bis,disney.Pays,index_bis,"titre")
+# # Analyse par pays
+# index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
+# titre_join_bis = [" ".join(w)for w in titre]
+# titre_join_bis = [titre_join_bis[i] for i in index_bis]
+# titrepays=analysePays(titre_join_bis,disney.Pays,index_bis,"titre")
 
-# Commentairs positifs
-print("Nettoyage des commentaires positifs")
-positif=nettoyage.nettoyage_corpus(disney.Positif)
-positif_join = [" ".join(w)for w in positif]
-# On enlève les inconnus dans les avis
-index=[i for i in range(len(positif_join)) if positif_join[i] != "inconnu"]
-positif_join = [positif_join[i] for i in index]
+# # Commentairs positifs
+# print("Nettoyage des commentaires positifs")
+# positif=nettoyage.nettoyage_corpus(disney.Positif)
+# positif_join = [" ".join(w)for w in positif]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(positif_join)) if positif_join[i] != "inconnu"]
+# positif_join = [positif_join[i] for i in index]
 
-# Fonction d'analyse par année pour les commentaires positifs
-posdate=analyseDate(positif_join,annee,index,"positif")
+# # Fonction d'analyse par année pour les commentaires positifs
+# posdate=analyseDate(positif_join,annee,index,"positif")
 
-# Fonction d'analyse par hotel pour les positifs
-poshotel = analyseHotel(positif_join,disney.hotel,index,"positif")
+# # Fonction d'analyse par hotel pour les positifs
+# poshotel = analyseHotel(positif_join,disney.hotel,index,"positif")
 
-# Analyse par pays
-index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
-positif_join_bis = [" ".join(w)for w in positif]
-positif_join_bis = [positif_join_bis[i] for i in index_bis]
-pospays=analysePays(positif_join_bis,disney.Pays,index_bis,"positif")
+# # Analyse par pays
+# index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
+# positif_join_bis = [" ".join(w)for w in positif]
+# positif_join_bis = [positif_join_bis[i] for i in index_bis]
+# pospays=analysePays(positif_join_bis,disney.Pays,index_bis,"positif")
 
-# Commentaires négatifs
-print("Nettoyage des commentaires négatifs")
-negatif=nettoyage.nettoyage_corpus(disney.Négatif)
-negatif_join = [" ".join(w)for w in negatif]
-# On enlève les inconnus dans les avis
-index=[i for i in range(len(negatif_join)) if negatif_join[i] != "inconnu"]
-negatif_join = [negatif_join[i] for i in index]
+# # Commentaires négatifs
+# print("Nettoyage des commentaires négatifs")
+# negatif=nettoyage.nettoyage_corpus(disney.Négatif)
+# negatif_join = [" ".join(w)for w in negatif]
+# # On enlève les inconnus dans les avis
+# index=[i for i in range(len(negatif_join)) if negatif_join[i] != "inconnu"]
+# negatif_join = [negatif_join[i] for i in index]
 
-# Fonction d'analyse par année pour les commentaires négatifs
-negdate=analyseDate(negatif_join,annee,index,"négatif")
-
-
-# Fonction d'analyse par hotel pour les négatifs
-neghotel = analyseHotel(negatif_join,disney.hotel,index,"négatif")
+# # Fonction d'analyse par année pour les commentaires négatifs
+# negdate=analyseDate(negatif_join,annee,index,"négatif")
 
 
-# Analyse par pays
-index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
-negatif_join_bis = [" ".join(w)for w in negatif]
-negatif_join_bis = [negatif_join_bis[i] for i in index_bis]
-negpays=analysePays(negatif_join_bis,disney.Pays,index_bis,"négatif")
+# # Fonction d'analyse par hotel pour les négatifs
+# neghotel = analyseHotel(negatif_join,disney.hotel,index,"négatif")
+
+
+# # Analyse par pays
+# index_bis = [index[i] for i in range(0,len(index)-1) if index[i] in index_pays]
+# negatif_join_bis = [" ".join(w)for w in negatif]
+# negatif_join_bis = [negatif_join_bis[i] for i in index_bis]
+# negpays=analysePays(negatif_join_bis,disney.Pays,index_bis,"négatif")
 
 
 #Menu
@@ -189,6 +185,7 @@ TABPANEL = dbc.Container([
 
 #Content
 PageContent = dbc.Container([
+    dcc.Store("disney"),
     html.Div([
         #Accueil
         html.P("Accueil")
@@ -203,8 +200,7 @@ PageContent = dbc.Container([
             html.P("KPIs")
         ], id="kpi-tab", style= {'display': 'none'}),
         html.Div([
-            #Acquisition
-            html.P("Acquisition")
+            html.Button('Mettre à jour', id='MAJ'),
         ], id="getData-tab", style= {'display': 'none'})
         
     ], id="data-tab", style= {'display': 'none'}),
@@ -329,10 +325,9 @@ def tabChangeAnalyse(value):
                 {'display': 'none'},
                 {'display': 'block'}]
     
-@app.callback( [Output('date-titre', 'style'),
+@app.callback([Output('date-titre', 'style'),
                Output('date-positif', 'style'),
-               Output('date-negatif', 'style')
-               ],
+               Output('date-negatif', 'style')],
                [Input('liste_choix_corpus_date', 'value')])
 def DateChangeCorpus(value):
     if value == "1":
@@ -349,6 +344,23 @@ def DateChangeCorpus(value):
         return [{'display': 'none'},
                 {'display': 'none'},
                 {'display': 'block'}]
+    
+@app.callback([Output("disney", "data")],
+              [Input('MAJ', 'n_clicks')])
+def MiseAJour(n_clicks):
+    global disney
+    global date
+    global hotel
+    global pays
+    global connection
+    if n_clicks is not None:        
+        newAvis = loopScraping.loopScraping(disney)
+        date, pays = rawToBDD.StarToSQLInsert(newAvis, date, hotel, pays, connection)
+        disney = disney.append(newAvis)
+        disney.to_csv("data/disney.csv", index=False)  
+        
+    return [disney.to_dict('records')]
+
 #Lauch
 if __name__ == '__main__':
     app.run_server(debug=True, use_reloader=False)
