@@ -111,7 +111,9 @@ def preparation(disney):
     negatifHotel = analyseHotel(negatif, disney.hotel, indexNegatif, "négatif")
     negatifPays = analysePays(negatif, disney.Pays, indexNegatifPays, "négatif")
     
-preparation(disney)
+    return titreDate,titreHotel,titrePays,positifDate,positifHotel,positifPays,negatifDate,negatifHotel,negatifPays
+    
+titreDate,titreHotel,titrePays,positifDate,positifHotel,positifPays,negatifDate,negatifHotel,negatifPays = preparation(disney)
  
 nbAvis = len(disney)
 nbGood = len(disney[disney.Positif != "Inconnu"])
