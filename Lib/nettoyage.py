@@ -44,3 +44,18 @@ def nettoyage_corpus(corpus,vire_vide=True):
     #output
     output = [nettoyage_doc(doc) for doc in corpus if ((len(doc) > 0) or (vire_vide == False))]
     return output
+
+def nettoyageColAvis(disney, col):
+    # #### Nettoyage
+    # Titre
+    print("Nettoyage des "+col)
+    
+    # On enlève les inconnus dans les avis
+    index=[i for i in disney[col] if i != "Inconnu"]
+    clean = [disney[col][i] for i in index]
+    
+    # On nettoie
+    clean=nettoyage_corpus(clean)
+    clean = [" ".join(w) for w in clean]
+    
+    return clean, index
