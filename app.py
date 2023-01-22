@@ -205,11 +205,107 @@ PageContent = dbc.Container([
         ], id="date-tab", style= {'display': 'none'}),
         html.Div([
             #Pays
-            html.P("Pays")
+            dcc.Dropdown(
+                       options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
+                       value="1",
+                       style={'color': 'Pink', 'font-size': 20},
+                       clearable = False,
+                       id="liste_choix_corpus_pays"
+                 ),
+                
+
+                
+                html.Div([
+                    dcc.Dropdown(
+                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
+                           value="1",
+                           style={'color': 'Pink', 'font-size': 20},
+                           clearable = False,
+                           id="liste_choix_pays_titre"
+                     ),
+                    
+                   html.Img(src=r"assets/titre/CastleWC_Allemagne.png", width='20%', id="titre-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Belgique.png",width='20%', id="titre-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Espagne.png",width='20%', id="titre-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_France.png",width='20%', id="titre-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Italie.png",width='20%', id="titre-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Pays-Bas.png",width='20%', id="titre-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Royaume-Uni.png",width='20%', id="titre-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/titre/CastleWC_Suisse.png",width='20%', id="titre-Suisse", style= {'display': 'none'})
+                ], id="pays-titre", style= {'display': 'none'}),
+                
+                html.Div([
+                    dcc.Dropdown(
+                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
+                           value="1",
+                           style={'color': 'Pink', 'font-size': 20},
+                           clearable = False,
+                           id="liste_choix_pays_positif"
+                     ),
+                   html.Img(src=r"assets/positif/CastleWC_Allemagne.png", width='20%', id="positif-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Belgique.png",width='20%', id="positif-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Espagne.png",width='20%', id="positif-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_France.png",width='20%', id="positif-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Italie.png",width='20%', id="positif-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Pays-Bas.png",width='20%', id="positif-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Royaume-Uni.png",width='20%', id="positif-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/positif/CastleWC_Suisse.png",width='20%', id="positif-Suisse", style= {'display': 'none'})
+                ], id="pays-positif", style= {'display': 'none'}),
+                
+                html.Div([
+                    dcc.Dropdown(
+                           options={"1":'Allemagne', "2":'Belgique', "3":'Espagne', "4":"France", "5":"Italie", "6":"Pays-Bas", "7":"Royaume-Uni","8":"Suisse"},
+                           value="1",
+                           style={'color': 'Pink', 'font-size': 20},
+                           clearable = False,
+                           id="liste_choix_pays_negatif"
+                     ),
+                     
+                   html.Img(src=r"assets/négatif/CastleWC_Allemagne.png", width='20%', id="négatif-Allemagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Belgique.png",width='20%', id="négatif-Belgique", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Espagne.png",width='20%', id="négatif-Espagne", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_France.png",width='20%', id="négatif-France", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Italie.png",width='20%', id="négatif-Italie", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Pays-Bas.png",width='20%', id="négatif-Pays-Bas", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Royaume-Uni.png",width='20%', id="négatif-Royaume-Uni", style= {'display': 'none'}),
+                   html.Img(src=r"assets/négatif/CastleWC_Suisse.png",width='20%', id="négatif-Suisse", style= {'display': 'none'})
+                ], id="pays-negatif", style= {'display': 'none'})
         ], id="pays-tab", style= {'display': 'none'}),
         html.Div([
             #Hôtel
-            html.P("Hôtel")
+            dcc.Dropdown(
+                    options={"1":'Titre', "2":'Commentaires positifs', "3":'Commentaires négatifs'},
+                    value="1",
+                    style={'color': 'Pink', 'font-size': 20},
+                    clearable = False,
+                    id="liste_choix_corpus_hotel"
+              ),
+             html.Div([
+                html.Img(src=r"assets/titre/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/titre/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-titre", style= {'display': 'none'}),
+             
+             html.Div([
+                html.Img(src=r"assets/positif/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/positif/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-positif", style= {'display': 'none'}),
+             
+             html.Div([
+                html.Img(src=r"assets/négatif/CastleWC_cheyenne.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_davyCrockettRanch.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_newportBay.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_newYork.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_santaFe.png",width='20%'),
+                html.Img(src=r"assets/négatif/CastleWC_sequoiaLodge.png",width='20%')
+             ], id="hotel-negatif", style= {'display': 'none'})
         ], id="hotel-tab", style= {'display': 'none'}),
         html.Div([
             #Mots liés
@@ -297,6 +393,323 @@ def DateChangeCorpus(value):
         return [{'display': 'none'},
                 {'display': 'none'},
                 {'display': 'block'}]
+    
+    
+    
+@app.callback( [Output('hotel-titre', 'style'),
+                Output('hotel-positif', 'style'),
+                Output('hotel-negatif', 'style')
+                ],
+                [Input('liste_choix_corpus_hotel', 'value')])
+def HotelChangeCorpus(value):
+    if value == "1":
+        return [{'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "2":
+        return [{'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'}]
+     
+    if value == "3":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'}]   
+
+@app.callback( [Output('pays-titre', 'style'),
+                Output('pays-positif', 'style'),
+                Output('pays-negatif', 'style')
+                ],
+                [Input('liste_choix_corpus_pays', 'value')])
+def PaysChangeCorpus(value):
+    if value == "1":
+        return [{'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "2":
+        return [{'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'}]
+     
+    if value == "3":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'}]
+
+@app.callback( [Output('titre-Allemagne', 'style'),
+                Output('titre-Belgique', 'style'),
+                Output('titre-Espagne', 'style'),
+                Output('titre-France', 'style'),
+                Output('titre-Italie', 'style'),
+                Output('titre-Pays-Bas', 'style'),
+                Output('titre-Royaume-Uni', 'style'),
+                Output('titre-Suisse', 'style')
+                ],
+                [Input('liste_choix_pays_titre', 'value')])
+def PaysChangeTitre(value):
+    if value == "1":
+        return [{'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "2":
+        return [{'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "3":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "4":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "5":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "6":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "7":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'}]
+    
+    if value == "8":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'}]
+
+@app.callback( [Output('positif-Allemagne', 'style'),
+                Output('positif-Belgique', 'style'),
+                Output('positif-Espagne', 'style'),
+                Output('positif-France', 'style'),
+                Output('positif-Italie', 'style'),
+                Output('positif-Pays-Bas', 'style'),
+                Output('positif-Royaume-Uni', 'style'),
+                Output('positif-Suisse', 'style')
+                ],
+                [Input('liste_choix_pays_positif', 'value')])
+def PaysChangePositif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "2":
+        return [{'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "3":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "4":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "5":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "6":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "7":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'}]
+    
+    if value == "8":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'}]
+
+@app.callback( [Output('négatif-Allemagne', 'style'),
+                Output('négatif-Belgique', 'style'),
+                Output('négatif-Espagne', 'style'),
+                Output('négatif-France', 'style'),
+                Output('négatif-Italie', 'style'),
+                Output('négatif-Pays-Bas', 'style'),
+                Output('négatif-Royaume-Uni', 'style'),
+                Output('négatif-Suisse', 'style')
+                ],-                [Input('liste_choix_pays_negatif', 'value')])
+def PaysChangeNegatif(value):
+    if value == "1":
+        return [{'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "2":
+        return [{'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+     
+    if value == "3":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "4":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "5":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "6":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'},
+                 {'display': 'none'}]
+    
+    if value == "7":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'},
+                 {'display': 'none'}]
+    
+    if value == "8":
+        return [{'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'none'},
+                 {'display': 'block'}]  
+
     
 @app.callback([Output("disney", "data")],
               [Input('MAJ', 'n_clicks')])
