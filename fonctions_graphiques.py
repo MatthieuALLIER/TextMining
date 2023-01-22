@@ -32,7 +32,7 @@ dictio = dict(zip(old, new))
 df_commdate['mois'].replace(dictio, inplace=True)
 
 #Moyenne de note par mois
-agg_df = df-commdate.groupby(["annee","mois"])["Note"].mean().to_frame().reset_index()
+agg_df = df_commdate.groupby(["annee","mois"])["Note"].mean().to_frame().reset_index()
 
 #Nouveau index date
 agg_df['date'] = agg_df['annee'].str.cat(agg_df['mois'], sep=' ')
