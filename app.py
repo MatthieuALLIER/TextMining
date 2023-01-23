@@ -7,31 +7,20 @@ Created on Tue Jan 17 17:12:04 2023
 
 #Utils
 import pandas as pd
-from datetime import date
-import dateparser
-
-#TextMining
-from wordcloud import WordCloud
+import json
 
 #Dash
 import dash
-from dash import Dash, html, dcc, Input, Output, State, ctx
-from dash.exceptions import PreventUpdate
+from dash import Dash, html, dcc, Input, Output, ctx, dash_table
 import dash_bootstrap_components as dbc
-
-#Plotly
-import plotly.express as px
-import plotly.graph_objects as go
 
 #MySQL
 import mysql.connector
 from mysql.connector import Error
 
 #Lib interne
-from Lib import nettoyage, loopScraping, rawToBDD
-from analyse_date import analyseDate
-from Analyse_pays import analysePays
-from analyse_hotel import analyseHotel
+from Lib import loopScraping, rawToBDD
+from fonctions_analyse import preparation
 
 #Connection à la Base de donnée
 try:
@@ -69,64 +58,11 @@ pays = pd.DataFrame(pays, columns=['pays', 'id_pays'])
 disney["Date séjour"] = disney["Date séjour"].replace(list(date.id_date), list(date.date))
 disney["hotel"] = disney["hotel"].replace(list(hotel.id_hotel), list(hotel.hotel))
 disney["Pays"] = disney["Pays"].replace(list(pays.id_pays), list(pays.pays))
-disney.Note = pd.to_numeric(disney.Note)
+disney.Note = pd.to_numeric(disney.Note)        
 
-def preparation(disney):
-    # Passage de la colonne date_sejour en format date
-    print("Formatage des dates...")
-     
-    date_sejour = disney["Date séjour"].tolist()
-    date_sejour=[dateparser.parse(date) for date in date_sejour]
-    global annee
-    annee=[date.year for date in date_sejour]
-    
-    
-    # Sélection des pays
-    print("Sélection des pays")
-    # On crée une une liste contenant la liste des pays sans doublons 
-    global liste_pays
-    liste_pays = list(set(disney["Pays"]))
-    
-    # On choisis uniquement les pays avec plus de 200 commentaires
-    liste_pays = [pays for pays in liste_pays if len(disney[disney.Pays == pays])>=200]
-    
-    #Index de avis de ces pays
-    index_ind_pays = [i for i in range(len(disney)) if disney.Pays[i] in liste_pays]
-
-    titre, indexTitre = nettoyage.nettoyageColAvis(disney,"Titre")
-    positif, indexPositif = nettoyage.nettoyageColAvis(disney,"Positif")
-    negatif, indexNegatif = nettoyage.nettoyageColAvis(disney,"Négatif")
-    
-    indexTitrePays = set(titre).intersection(index_ind_pays)
-    indexPositifPays = set(positif).intersection(index_ind_pays)
-    indexNegatifPays = set(negatif).intersection(index_ind_pays)
-    
-    titreDate = analyseDate(titre, annee, indexTitre, "titre")
-    titreHotel = analyseHotel(titre, disney.hotel, indexTitre, "titre")
-    titrePays = analysePays(titre, disney.Pays, indexTitrePays, "titre")
-    positifDate = analyseDate(positif, annee, indexPositif, "positif")
-    positifHotel = analyseHotel(positif, disney.hotel, indexPositif, "positif")
-    positifPays = analysePays(positif, disney.Pays, indexPositifPays, "positif")
-    negatifDate = analyseDate(negatif, annee, indexNegatif, "négatif")
-    negatifHotel = analyseHotel(negatif, disney.hotel, indexNegatif, "négatif")
-    negatifPays = analysePays(negatif, disney.Pays, indexNegatifPays, "négatif")
-    
-    return titreDate,titreHotel,titrePays,positifDate,positifHotel,positifPays,negatifDate,negatifHotel,negatifPays
-    
-titreDate,titreHotel,titrePays,positifDate,positifHotel,positifPays,negatifDate,negatifHotel,negatifPays = preparation(disney)
- 
-nbAvis = len(disney)
-nbGood = len(disney[disney.Positif != "Inconnu"])
-nbBad = len(disney[disney.Négatif != "Inconnu"])
-noteAvg = round(disney.Note.mean(), 2)
-noteMin = min(disney.Note)
-noteMax = max(disney.Note)
-dateMin = min(annee)
-dateMax = max(annee)
-nbPays = len(list(set(disney["Pays"])))
-nbPays200 = len(liste_pays)
-        
-    
+f = open('data/datas.json')
+datas = json.load(f)
+  
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='Disney textmining')
 server = app.server    
 
@@ -148,7 +84,7 @@ TABPANEL = dbc.Container([
 
 #Content
 PageContent = dbc.Container([
-    dcc.Store("disney"),
+    dcc.Store("datas"),
     html.Div([], id="no-output", style= {'display': 'none'}),
     html.Div([
         #Accueil
@@ -160,22 +96,7 @@ PageContent = dbc.Container([
                     dbc.Tab(label="Acquisition", tab_id="getData")     
                 ], id="tabPanelData", active_tab="kpi"),
         html.Div([
-            html.Div([
-                html.P("Nombre d'avis : "+str(nbAvis)),
-                html.P("Nombre d'avis positifs : "+str(nbGood)),
-                html.P("Nombre d'avis négatifs : "+str(nbBad)),
-                html.P("Date minimum : "+str(dateMin)),
-                html.P("Date maximum : "+str(dateMax)),
-                html.P("Nombre de pays : "+str(nbPays)),
-                html.P("Nombre de pays avec plus de 200 avis : "+str(nbPays200)),
-                html.P("Notes : "),
-                html.P("Minimum : "+str(noteMin)),
-                html.P("Moyenne : "+str(noteAvg)),
-                html.P("Maximum : "+str(noteMax)),
-            ], style = {"width":"25%"}),
-            html.Div([
-                
-            ], style = {"width":"75%"})
+            #Construction auto
         ], id="kpi-tab", style= {'display': 'none'}),
         html.Div([
             html.Button('Mettre à jour', id='MAJ'),
@@ -221,9 +142,65 @@ def tabChangeData(value):
         return [{'display': 'none'},
                 {'display': 'block'}]
 
+@app.callback([Output("kpi-tab", "children")],
+              [Input("datas", "data")])
+def constructionDataeTab(data):
+    global disney
+    nbAvis = data["nbAvis"]
+    nbGood = data["nbGood"]
+    nbBad = data["nbBad"]
+    dateMin = data["dateMin"]
+    dateMax = data["dateMax"]
+    nbPays = data["nbPays"]
+    nbPays200 = data["nbPays200"]
+    noteMin = data["noteMin"]
+    noteAvg = data["noteAvg"]
+    noteMax = data["noteMax"]
+    
+    children = html.Div([], style = {"display":"flex"})
+    children.children.append(
+        html.Div([
+            html.P("Nombre d'avis : "+str(nbAvis)),
+            html.P("Nombre d'avis positifs : "+str(nbGood)),
+            html.P("Nombre d'avis négatifs : "+str(nbBad)),
+            html.P("Date minimum : "+str(dateMin)),
+            html.P("Date maximum : "+str(dateMax)),
+            html.P("Nombre de pays : "+str(nbPays)),
+            html.P("Nombre de pays avec plus de 200 avis : "+str(nbPays200)),
+            html.P("Notes : "),
+            html.P("Minimum : "+str(noteMin)),
+            html.P("Moyenne : "+str(noteAvg)),
+            html.P("Maximum : "+str(noteMax)),
+        ], style = {"width":"25%"})
+    )
+    children.children.append(
+        html.Div([
+            dash_table.DataTable(
+                data=disney.to_dict('records'),
+                columns=[{"name": i, "id": i} for i in disney.columns],
+                style_data={
+                    'whiteSpace': 'normal',
+                    'height': 'auto',
+                },
+                style_table={
+                    'height': 500,
+                    'overflowY': 'scroll',
+                    'width': "100%"
+                },
+                sort_action="native"
+            )            
+        ], style = {"width":"75%"})
+    )
+    return [children]
+
 @app.callback([Output("analyse-tab", "children")],
-              [Input("no-output", "children")])
-def constructionAnalyseTab(n_clicks):
+              [Input("datas", "data")])
+def constructionAnalyseTab(data):
+    
+    annee = data["annee"]
+    liste_pays = data["liste_pays"]    
+    liste_sim = ['séjour','personnel','prix','bien','super','cher']
+    
     children = []
     optionsDate = {k: k for k in list(map(str, list(set(annee))))}
     optionsPays = {k: k for k in liste_pays}
@@ -251,7 +228,7 @@ def constructionAnalyseTab(n_clicks):
         
         for mesure in ["titre","positif","négatif"]:
             
-            mesureDiv = html.Div([], id=dimension+"-"+mesure, style= {'display': 'none'})
+            mesureDiv = html.Div([], id=dimension+"-"+mesure, style = {"display":"none"})
             
             if dimension == "date":
                 options = optionsDate
@@ -259,19 +236,53 @@ def constructionAnalyseTab(n_clicks):
                 options = optionsPays
             elif dimension == "hotel":
                 options = optionsHotel
-                
-            ddDimension =  dcc.Dropdown(
-                options=options,
-                style={'font-size': 20},
-                clearable = False,
-                id="dd_"+dimension+"_"+mesure)
+               
+            dimDatas = dimension[0].upper() +dimension[1:]
+            mesDatas = mesure.replace("é","e")
+            DfDimension = pd.DataFrame(data[mesDatas+dimDatas][0]).reset_index()
+            SimilariteMot = pd.DataFrame(data[mesDatas+dimDatas][1], columns = ["Similaire","Taux"])
             
-            mesureDiv.children.append(ddDimension)
-            
+            imgDiv = html.Div([], style={"display":"flex"})
+            i = 1
             for modalite in options.values():
-                img = html.Img(src=r"assets/"+mesure+"/CastleWC_"+modalite+".png", width='50%', id=mesure+"-"+modalite, style= {'display': 'none'})
-                mesureDiv.children.append(img)
+                if i%5 == 0:
+                    mesureDiv.children.append(imgDiv)
+                    imgDiv = html.Div([], style={"display":"flex"})
+                img = html.Div([
+                    html.H4(modalite, style={"text-align":"center"}),
+                    html.Img(src=r"assets/"+mesure+"/CastleWC_"+modalite+".png", width="100%")
+                ], style={"width":"25%"})
+                imgDiv.children.append(img)
+                i += 1
                 
+            mesureDiv.children.append(imgDiv)
+            
+            dt = dash_table.DataTable(
+                data=DfDimension.to_dict('records'),
+                columns=[{"name": i, "id": i} for i in DfDimension.columns],
+                style_table={
+                    'height': 400,
+                    'overflowY': 'scroll',
+                    'width': "100%"
+                },
+                sort_action="native"
+            )            
+            mesureDiv.children.append(dt)
+            
+            similiteDiv = html.Div([
+                html.P("Mots liés avec : ("+", ".join(liste_sim)+")"),
+                dash_table.DataTable(
+                    data=SimilariteMot.to_dict('records'),
+                    columns=[{"name": i, "id": i} for i in SimilariteMot.columns],
+                    style_table={
+                        'height': 400,
+                        'width': "30%"
+                    },
+                    sort_action="native"
+                )
+            ])            
+            mesureDiv.children.append(similiteDiv)                
+            
             dimensionTab.children.append(mesureDiv)
             
         children.append(dimensionTab)
@@ -279,8 +290,8 @@ def constructionAnalyseTab(n_clicks):
     return [children]
 
 #Preparation callback
-optionsDate = {k: k for k in list(map(str, list(set(annee))))}
-optionsPays = {k: k for k in liste_pays}
+optionsDate = {k: k for k in list(map(str, list(set(datas["annee"]))))}
+optionsPays = {k: k for k in datas["liste_pays"]}
 optionsHotel = {k: k for k in list(set(disney.hotel))}
 
 outputs = []
@@ -291,18 +302,7 @@ for dimension in ["date","pays","hotel"]:
     
     for mesure in ["titre","positif","négatif"]:
         
-        inputs.append(Input("dd_"+dimension+"_"+mesure, "value"))
         outputs.append(Output(dimension+"-"+mesure, "style"))
-        
-        if dimension == "date":
-            options = optionsDate
-        elif dimension == "pays":
-            options = optionsPays
-        elif dimension == "hotel":
-            options = optionsHotel
-        
-        for modalite in options.values():
-            outputs.append(Output(mesure+"-"+modalite, "style"))
             
 outIds = [output.component_id for output in outputs]
 inpIds = [inp.component_id for inp in inputs]
@@ -332,14 +332,16 @@ def tabChangeAnalyse(value):
         
 @app.callback(outputs,
               inputs)
-def showMask(value1,value2,value3,value4,value5,value6,value7,value8,value9,value10,value11,value12):
+def showMask(value1,value2,value3):
     
     trigger = ctx.triggered_id
+    
     if trigger == None:
         return dash.no_update
+    
     res = [{'display': 'none'} for i in range(len(outIds))]
     
-    values = [value1,value2,value3,value4,value5,value6,value7,value8,value9,value10,value11,value12]
+    values = [value1,value2,value3]
     value = values[inpIds.index(trigger)]
     
     for dimension in ["date","pays","hotel"]:
@@ -348,20 +350,12 @@ def showMask(value1,value2,value3,value4,value5,value6,value7,value8,value9,valu
             outIndex = outIds.index(dimension+"-"+value)
             res[outIndex] = {'display': 'block'}
             return res
-        
-        for mesure in ["titre","positif","négatif"]:
-                    
-            if trigger == "dd_"+dimension+"_"+mesure:
-                outIndex = outIds.index(mesure+"-"+value)
-                res[outIndex] = {'display': 'block'}
-                outIndex = outIds.index(dimension+"-"+mesure)
-                res[outIndex] = {'display': 'block'}
-                return res
     
-@app.callback([Output("disney", "data")],
+@app.callback([Output("datas", "data")],
               [Input('MAJ', 'n_clicks'),
                Input('Actu', 'n_clicks')])
 def MiseAJour_Actualisation(maj, actu):
+    global datas
     global disney
     global date
     global hotel
@@ -372,13 +366,23 @@ def MiseAJour_Actualisation(maj, actu):
         date, pays = rawToBDD.StarToSQLInsert(newAvis, date, hotel, pays, connection)       
         disney = disney.append(newAvis)
         disney.to_csv("data/disney.csv", index=False)
-        return [disney.to_dict("record")]
+        return [datas]
     if actu is not None:
-        preparation(disney)
+        datas = preparation(disney)
+        for obj in ["titreDate","titreHotel","titrePays",
+                "positifDate","positifHotel","positifPays",
+                "negatifDate","negatifHotel","negatifPays"]:
+            datas[obj] = list(datas[obj])
+            datas[obj][0] = datas[obj][0].to_dict()
+        
+        with open('data/datas.json', 'w') as f:
+            json.dump(datas, f)
+            
         print("préparation terminée")
-        return [disney.to_dict("record")]
-    raise PreventUpdate()
+        return [datas]
+    else:
+        return [datas]
 
 #Lauch
 if __name__ == '__main__':
-    app.run_server(debug=True, use_reloader=False)
+    app.run_server()

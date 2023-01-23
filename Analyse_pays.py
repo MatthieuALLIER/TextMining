@@ -17,6 +17,7 @@ import fonctions_analyse as fa
 def analysePays(compos_clean, pays, index, type_analyse):
     
     pays= [pays[i] for i in index]
+    
     parseur = CountVectorizer()
     
     #pour la colonne "pourquoi"

@@ -8,11 +8,17 @@
 #                                                                                                                                          #
 ############################################################################################################################################
 
-import os, pandas as pd
+import pandas as pd
 import nltk
 import numpy
 import string
 import matplotlib.pyplot as plt
+import dateparser
+
+from analyse_date import analyseDate
+from Analyse_pays import analysePays
+from analyse_hotel import analyseHotel
+from Lib import nettoyage
 
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -274,6 +280,64 @@ def my_cah_from_doc2vec(corpus,trained,seuil=1.0,nbTermes=7):
 #EXEMPLE D'APPEL DE LA FONCTION
 #g1,mat1 = my_cah_from_doc2vec(corpus,dico,seuil=10)
 
+def preparation(disney):
+    # Passage de la colonne date_sejour en format date
+    print("Formatage des dates...")
+     
+    date_sejour = disney["Date séjour"].tolist()
+    date_sejour=[dateparser.parse(date) for date in date_sejour]
+    global annee
+    annee=[date.year for date in date_sejour]
+    
+    # Sélection des pays
+    print("Sélection des pays")
+    # On crée une une liste contenant la liste des pays sans doublons 
+    global liste_pays
+    liste_pays = list(set(disney["Pays"]))
+    
+    # On choisis uniquement les pays avec plus de 200 commentaires
+    liste_pays = [pays for pays in liste_pays if len(disney[disney.Pays == pays])>=200]
+    
+    #Index de avis de ces pays
+    index_ind_pays = [i for i in range(len(disney)) if disney.Pays[i] in liste_pays]
+
+    titre, indexTitre = nettoyage.nettoyageColAvis(disney,"Titre")
+    positif, indexPositif = nettoyage.nettoyageColAvis(disney,"Positif")
+    negatif, indexNegatif = nettoyage.nettoyageColAvis(disney,"Négatif")
+    
+    indexTitrePays = set(indexTitre).intersection(index_ind_pays)
+    indexPositifPays = set(indexPositif).intersection(index_ind_pays)
+    indexNegatifPays = set(indexNegatif).intersection(index_ind_pays)
+    
+    titreDate = analyseDate(titre, annee, indexTitre, "titre")
+    titreHotel = analyseHotel(titre, disney.hotel, indexTitre, "titre")
+    titrePays = analysePays([disney["Titre"][i] for i in indexTitrePays], disney.Pays, indexTitrePays, "titre")
+    positifDate = analyseDate(positif, annee, indexPositif, "positif")
+    positifHotel = analyseHotel(positif, disney.hotel, indexPositif, "positif")
+    positifPays = analysePays([disney["Positif"][i] for i in indexPositifPays], disney.Pays, indexPositifPays, "positif")
+    negatifDate = analyseDate(negatif, annee, indexNegatif, "négatif")
+    negatifHotel = analyseHotel(negatif, disney.hotel, indexNegatif, "négatif")
+    negatifPays = analysePays([disney["Négatif"][i] for i in indexNegatifPays], disney.Pays, indexNegatifPays, "négatif")
+    
+    nbAvis = len(disney)
+    nbGood = len(disney[disney.Positif != "Inconnu"])
+    nbBad = len(disney[disney.Négatif != "Inconnu"])
+    noteAvg = round(disney.Note.mean(), 2)
+    noteMin = min(disney.Note)
+    noteMax = max(disney.Note)
+    dateMin = min(annee)
+    dateMax = max(annee)
+    nbPays = len(list(set(disney["Pays"])))
+    nbPays200 = len(liste_pays)
+    
+    return {"titreDate":titreDate,"titreHotel":titreHotel,"titrePays":titrePays,
+            "positifDate":positifDate,"positifHotel":positifHotel,"positifPays":positifPays,
+            "negatifDate":negatifDate,"negatifHotel":negatifHotel,"negatifPays":negatifPays,
+            "nbAvis":nbAvis,"nbGood":nbGood,"nbBad":nbBad,
+            "noteAvg":noteAvg,"noteMin":noteMin,"noteMax":noteMax,
+            "dateMin":dateMin,"dateMax":dateMax,
+            "nbPays":nbPays,"nbPays200":nbPays200,
+            "annee":annee,"liste_pays":liste_pays} 
 
 
 
