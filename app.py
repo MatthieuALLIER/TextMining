@@ -88,7 +88,9 @@ PageContent = dbc.Container([
     html.Div([], id="no-output", style= {'display': 'none'}),
     html.Div([
         #Accueil
-        html.P("Accueil")
+        html.P("Ce projet avait pour objectif de récupérer les données concernant les commentaires de 6 hôtels apparteant à Disney.")
+        html.P("Notre groupe s'est concentré sur Booking.com")
+        
     ], id="index-tab", style= {'display': 'block'}),
     html.Div([
         dbc.Tabs([
