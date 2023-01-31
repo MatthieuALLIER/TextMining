@@ -88,8 +88,11 @@ PageContent = dbc.Container([
     html.Div([], id="no-output", style= {'display': 'none'}),
     html.Div([
         #Accueil
-        html.P("Ce projet avait pour objectif de récupérer les données concernant les commentaires de 6 hôtels apparteant à Disney.")
-        html.P("Notre groupe s'est concentré sur Booking.com")
+        html.H2("Ce projet avait pour objectif de récupérer les données concernant les commentaires de 6 hôtels apparteant à Disney."),
+        html.H2("Notre groupe s'est concentré sur Booking.com"),
+        html.Img(src=r"assets/Chateau_disney.jpg", width="100%"),
+        html.H2("Cette application contient 3 onglets : un premier pour actualiser le scrapping, un autre pour voir les analyses. "),
+        
         
     ], id="index-tab", style= {'display': 'block'}),
     html.Div([
@@ -119,6 +122,7 @@ app.layout = html.Div([TABPANEL, PageContent])
                Output('data-tab', 'style'), 
                Output('analyse-tab', 'style')],
                [Input('tabPanel', 'active_tab')])
+
 def tabChange(value):
     if value == "index":
         return [{'display': 'block'},
@@ -146,6 +150,7 @@ def tabChangeData(value):
 
 @app.callback([Output("kpi-tab", "children")],
               [Input("datas", "data")])
+
 def constructionDataeTab(data):
     global disney
     nbAvis = data["nbAvis"]
@@ -313,6 +318,7 @@ inpIds = [inp.component_id for inp in inputs]
                Output('pays-tab', 'style'), 
                Output('hotel-tab', 'style')],
                [Input('tabPanelAnalyse', 'active_tab')])
+
 def tabChangeAnalyse(value):
     if value == "date":
         return [{'display': 'block'},
@@ -356,6 +362,7 @@ def showMask(value1,value2,value3):
 @app.callback([Output("datas", "data")],
               [Input('MAJ', 'n_clicks'),
                Input('Actu', 'n_clicks')])
+
 def MiseAJour_Actualisation(maj, actu):
     global datas
     global disney
