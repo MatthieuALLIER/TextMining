@@ -93,8 +93,10 @@ PageContent = dbc.Container([
         html.Br(),
         html.H5("Notre groupe s'est concentré sur le site Booking.com."),
         html.Br(),
-        html.Img(src=r"assets/Chateau_disney.png", width="40%"),
-        html.Img(src=r"assets/Disney_Newport_Bay_Club.png", width="30%"),
+        html.Div([
+            html.Img(src=r"assets/Chateau_disney.jpg", height="100%"),
+            html.Img(src=r"assets/Disney_Newport_Bay_Club.jpg", height="100%", style = {"padding-left":"10px"})
+        ], style = {"height":"250px"}),
         html.Br(),
         html.Br(),
         html.H5("Nous avons récupéré plusieurs éléments concernant les commentaires :"),
@@ -106,12 +108,11 @@ PageContent = dbc.Container([
             html.Li("Le commentaire négatif"),
             html.Li("La date du séjour"),
             html.Li("La date du commentaire"),
-            html.Li("La présence ou l'absence de photo"), 
         html.Br(),
         html.Br(),
         html.H5("Cette application contient 2 onglets : "),
         html.Ul(),
-            html.Li("Un premier pour actualiser le scrapping"),
+            html.Li("Un premier pour voir les données et actualiser le scrapping"),
             html.Li("Un second pour accéder aux analyses")
         
         
