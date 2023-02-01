@@ -87,11 +87,32 @@ PageContent = dbc.Container([
     dcc.Store("datas"),
     html.Div([], id="no-output", style= {'display': 'none'}),
     html.Div([
-        #Accueil
-        html.H2("Ce projet avait pour objectif de récupérer les données concernant les commentaires de 6 hôtels apparteant à Disney."),
-        html.H2("Notre groupe s'est concentré sur Booking.com"),
-        html.Img(src=r"assets/Chateau_disney.jpg", width="100%"),
-        html.H2("Cette application contient 3 onglets : un premier pour actualiser le scrapping, un autre pour voir les analyses. "),
+       #Accueil
+        html.Br(),
+        html.H5("Ce projet avait pour objectif de récupérer les données concernant les commentaires de 6 hôtels apparteant à Disney."),
+        html.Br(),
+        html.H5("Notre groupe s'est concentré sur le site Booking.com."),
+        html.Br(),
+        html.Img(src=r"assets/Chateau_disney.png", width="40%"),
+        html.Img(src=r"assets/Disney_Newport_Bay_Club.png", width="30%"),
+        html.Br(),
+        html.Br(),
+        html.H5("Nous avons récupéré plusieurs éléments concernant les commentaires :"),
+        html.Ul(),
+            html.Li("La note attribuée"),
+            html.Li("La nationalité du donneur de l'avis"),
+            html.Li("Le titre de l'avis"),
+            html.Li("Le commentaire positif"),
+            html.Li("Le commentaire négatif"),
+            html.Li("La date du séjour"),
+            html.Li("La date du commentaire"),
+            html.Li("La présence ou l'absence de photo"), 
+        html.Br(),
+        html.Br(),
+        html.H5("Cette application contient 2 onglets : "),
+        html.Ul(),
+            html.Li("Un premier pour actualiser le scrapping"),
+            html.Li("Un second pour accéder aux analyses")
         
         
     ], id="index-tab", style= {'display': 'block'}),
