@@ -126,8 +126,14 @@ PageContent = dbc.Container([
             #Construction auto
         ], id="kpi-tab", style= {'display': 'none'}),
         html.Div([
-            html.Button('Mettre à jour', id='MAJ'),
-            html.Button('Actualiser les analyses', id='Actu')
+            html.Button('Mettre à jour', id='MAJ', style = {"width":"20%", "height":"50px",
+                                                            "background-color":"white",
+                                                            "border":"2px solid blue",
+                                                            "margin":"10px"}),
+            html.Button('Actualiser les analyses', id='Actu', style = {"width":"20%", "height":"50px",
+                                                            "background-color":"white",
+                                                            "border":"2px solid blue",
+                                                            "margin":"10px"})
         ], id="getData-tab", style= {'display': 'none'})
         
     ], id="data-tab", style= {'display': 'none'}),
